@@ -1,0 +1,32 @@
+[
+  {
+      "id": "All",
+      "name": "All", 
+      "parentId": "null",
+      "icon": "Leaf"
+  },
+  {
+      "id": "Bundles",
+      "name": "Bundles", 
+      "parentId": "null",
+      "icon": "Bundles"
+    },
+    {
+        "id": "herbs",
+        "name": "herbs", 
+        "parentId": "null",
+        "icon": "CurlyLeaf"
+    },
+  {
+      "id": "vegetables",
+      "name": "vegetables", 
+      "parentId": "null",
+      "icon": "Tomato"
+  },
+  {
+      "id": "flowers",
+      "name": "flowers", 
+      "parentId": "null",
+      "icon": "Flower"
+  }
+]
