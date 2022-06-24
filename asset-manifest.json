@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/SeedraClient/static/css/main.039bf95e.css",
+    "main.js": "/SeedraClient/static/js/main.8a6e8d28.js",
+    "static/media/leaf.png": "/SeedraClient/static/media/leaf.1985dee8a30c36719757.png",
+    "static/media/Vector.svg": "/SeedraClient/static/media/Vector.5721e13e0bbe228d331c67e7c0678538.svg",
+    "index.html": "/SeedraClient/index.html",
+    "main.039bf95e.css.map": "/SeedraClient/static/css/main.039bf95e.css.map",
+    "main.8a6e8d28.js.map": "/SeedraClient/static/js/main.8a6e8d28.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.039bf95e.css",
+    "static/js/main.8a6e8d28.js"
+  ]
+}
