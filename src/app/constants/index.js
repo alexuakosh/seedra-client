@@ -5,7 +5,7 @@ export const downloadRequestStates = {
   IDLE: "idle",
 };
 
-export const API = "https://seedra-server.herokuapp.com/api/"; 
+export const API = "https://seedra-server.vercel.app/api/"; 
 export const PRODUCTS_NUMBER_ON_MAIN_PAGE = 6
 
 export const productCategories = [
