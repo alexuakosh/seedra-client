@@ -41,9 +41,7 @@ const Filters = () => {
     `${classes.filtersIcon} ${classes.isClosed}`
   );
   const [filtersClasses, setFiltersClasses] = useState(classes.filters);
-  console.log(iconClasses)
-  console.log(iconOffClasses)
-
+  
   const productsQuantity = useSelector(productsQuantitySelector);
   const loading = useSelector(downloadFilteredProductsRequestStateSelector);
   const filteredProducts = useSelector(filteredProductsSelector);

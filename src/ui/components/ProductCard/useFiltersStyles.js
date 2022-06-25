@@ -18,8 +18,8 @@ export const useFiltersStyles = makeStyles(() => ({
     border: "1px solid #EFEFEF",
   },
   productCardMedia: {
-    width: "210px",
-    margin: "28px auto",
+    margin: "28px",
+    width: "calc(100% - 56px)",
     borderRadius: "12px",
   },
   productCardRating: {

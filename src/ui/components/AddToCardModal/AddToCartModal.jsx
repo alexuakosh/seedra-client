@@ -31,6 +31,7 @@ const AddToCartModal = ({
   toggleIsOnModal,
 }) => {
   const { name, currentPrice, imageUrls, quantity, discountPrice, _id } = data;
+  
 
   const [productAmount, setProductAmount] = useState(1);
   const dispatch = useDispatch();
@@ -56,6 +57,8 @@ const AddToCartModal = ({
   const modalClasses = useModalStyles();
 
   return (
+   
+    
     <Modal
       open={open}
       onClose={() => {
@@ -176,7 +179,6 @@ const AddToCartModal = ({
                             _id,
                             productAmount,
                             name,
-                            // currentPrice,
                             totalPrice / productAmount,
                             imageUrls
                           )

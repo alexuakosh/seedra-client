@@ -17,7 +17,7 @@ export const useMainStyles = makeStyles((theme) => ({
     border: `1px solid ${theme.palette.grey["300"]}`,
   },
   productCardMedia: {
-    // width: "294px",
+    width: "calc(100% - 56px)",
     margin: "28px",
     borderRadius: "12px",
   },

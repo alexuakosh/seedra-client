@@ -148,3 +148,12 @@ export const adminAddProductRequestSelector = (state) => state.admin.adminAddPro
 
 export const adminDeleteProductRequestSelector = (state) => state.admin.adminDeleteProductRequestState;
 
+
+// ====================== Comments ==========================
+
+export const downloadAllCommentsSelector = (state) =>
+  state.comments.comments;
+
+export const downloadProductCommentsSelector = (state) =>
+  state.comments.productComments;
+

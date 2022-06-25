@@ -1,13 +1,21 @@
+import { useEffect } from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import RenderComponent  from "../../hoc/RenderComponent.jsx";
 import ProductsListSection from "../../../ui/components/ProductsListSection/ProductsListSection.jsx";
 import ErrorHandler from "../ErrorHandler/ErrorHandler.jsx";
 import { downloadFilteredProductsRequestStateSelector, filteredProductsSelector } from "../../../store/selectors/selectors";
+import { getCustomer } from "../../../store/thunks/customer.thunks";
 
 const ProductsList = () => {
   const downloadRequestState = useSelector(downloadFilteredProductsRequestStateSelector);
   const productList = useSelector(filteredProductsSelector);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getCustomer());
+  });
 
   return (
       <RenderComponent

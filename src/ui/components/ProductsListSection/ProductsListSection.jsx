@@ -13,7 +13,6 @@ const ProductsListSection = ({ data, loading, isLoading, productsNumber }) => {
 
   const productsFlteredArr = data?.products || [];
 
-
   return (
     <>
       <Container fixed={true} sx={{ marginTop: "30px", marginBottom: "89px" }}>
