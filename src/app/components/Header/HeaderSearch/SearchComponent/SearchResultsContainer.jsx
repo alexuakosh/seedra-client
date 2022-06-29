@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 // ------------------------------------------
-import { makeStyles } from "@material-ui/core"; // !!! <-------------- MUI CORE
+import { makeStyles } from "@mui/styles";
 // ------------------------------------------
 import Container from "@mui/material/Container";
 import { Card } from "@mui/material";
