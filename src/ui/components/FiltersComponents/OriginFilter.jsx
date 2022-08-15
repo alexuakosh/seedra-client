@@ -31,6 +31,24 @@ const OriginFilter = () => {
 
   const dispatch = useDispatch();
 
+  const checkAndSet = (checker, bool) => {
+    if (checker === "american") {
+      setAmericanState(bool);
+    }
+    if (checker === "english") {
+      setEnglishState(bool);
+    }
+    if (checker === "french") {
+      setFrenchState(bool);
+    }
+    if (checker === "italian") {
+      setItalianState(bool);
+    }
+    if (checker === "mexican") {
+      setMexicanState(bool);
+    }
+  }
+
   useEffect(() => {
     if (searchParams.get("origin") !== null) {
       dispatch(
@@ -41,21 +59,7 @@ const OriginFilter = () => {
 
   useEffect(() => {
     originCheckBoxState.forEach((item) => {
-      if (item === "american") {
-        setAmericanState(true);
-      }
-      if (item === "english") {
-        setEnglishState(true);
-      }
-      if (item === "french") {
-        setFrenchState(true);
-      }
-      if (item === "italian") {
-        setItalianState(true);
-      }
-      if (item === "mexican") {
-        setMexicanState(true);
-      }
+      checkAndSet(item, true)
     });
   }, [originCheckBoxState]);
 
@@ -73,21 +77,7 @@ const OriginFilter = () => {
         setOriginCheckboxState([...originCheckBoxState, event.target.name])
       );
     } else {
-      if (event.target.name === "american") {
-        setAmericanState(false);
-      }
-      if (event.target.name === "english") {
-        setEnglishState(false);
-      }
-      if (event.target.name === "french") {
-        setFrenchState(false);
-      }
-      if (event.target.name === "italian") {
-        setItalianState(false);
-      }
-      if (event.target.name === "mexican") {
-        setMexicanState(false);
-      }
+      checkAndSet(event.target.name, false);
 
       const newOriginCheckBoxState = originCheckBoxState.filter(
         (option) => option !== event.target.name

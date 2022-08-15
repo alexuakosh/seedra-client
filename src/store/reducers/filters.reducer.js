@@ -1,6 +1,5 @@
 import {
   SET_QUERY_PARAMS,
-  SORT_PRODUCTS_BY_PRICE,
   SET_SELECTED_CATEGORY,
   SET_INPUT_VALUE_FROM,
   SET_INPUT_VALUE_TO,
@@ -13,7 +12,6 @@ import {
 
 const initialState = {
   queryParams: {},
-  sortedByPrice: "most",
   selectedCategory: [],
   inputValueFrom: 0,
   inputValueTo: 30,
@@ -32,21 +30,14 @@ const filtersReducer = (state = initialState, action) => {
           ...state,
           queryParams: {},
         };
-      } 
+      }
       if (Object.keys(action.payload).length !== 0) {
         return {
           ...state,
           queryParams: action.payload,
         };
-      } 
+      }
       return state;
-      
-
-    case SORT_PRODUCTS_BY_PRICE:
-      return {
-        ...state,
-        sortedByPrice: action.payload,
-      };
 
     case SET_SELECTED_CATEGORY:
       return {

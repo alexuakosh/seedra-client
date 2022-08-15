@@ -13,6 +13,7 @@ import staticPage from "./reducers/staticPage.reducer";
 import filters from "./reducers/filters.reducer"; 
 import admin from "./reducers/admin.reducer";
 import comments from "./reducers/comments.reducer";
+import  mainPageCarousel from "./reducers/mainPageCarousel.reducer"
 
 
 const reduxDevToolsCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   staticPage, 
   admin,
   comments,
+  mainPageCarousel,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

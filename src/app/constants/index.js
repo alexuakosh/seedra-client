@@ -5,7 +5,7 @@ export const downloadRequestStates = {
   IDLE: "idle",
 };
 
-export const API = `https://seedra-server.herokuapp.com/api/`; 
+export const API = "http://localhost:8000/api/"; 
 export const PRODUCTS_NUMBER_ON_MAIN_PAGE = 6
 
 export const productCategories = [
@@ -16,3 +16,5 @@ export const productCategories = [
   { code: '5', label: 'flowers-mono'},
   { code: '6', label: 'flowers-mix'}, 
 ]; 
+
+export const notAdmin = 'You have to be logged in with admin credentials to access this page';

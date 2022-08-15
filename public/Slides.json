@@ -1,0 +1,56 @@
+[
+    {
+        "_id": "61f6c213481e16304cbbbd83",
+        "customId": "promotion-vegetables",
+        "name": "seedra 4 beans - 125 seeds for planting outdoors and indoors",
+        "currentPrice": 12.74,
+        "categories": "vegetables-mix",
+        "description": "SEEDRA Bean Seeds Variety Pack contains 4 beans - Royal Burgundy, Henderson Lima Bush, Shell - Pinto, Golden Wax. Free Tools - professional instructions, pH tester, 4 plant markers.",
+        "imageUrls": [
+        "https://res.cloudinary.com/danbeavers/image/upload/v1643484201/913SN14BSUL._AC_SL1500__xeij0v.jpg"
+      ],
+      "quantity": 100,
+      "itemNo": "954601",
+      "discountPrice": 9.74,
+      "date": "2022-01-30T20:04:29.611Z",
+      "__v": 0
+    },
+    {
+        "_id": "61f6c25e481e16304cbbbd8f",
+        "customId": "promotion-vegetables",
+        "name": "seedra 5 beets - 530 seeds for planting outdoors and indoors",
+        "currentPrice": 13.92,
+        "categories": "vegetables-mix",
+        "description": "SEEDRA Beet Seeds Variety Pack contains 5 beets - Chioggia, Cylindra, Detroit Dark Red, Ruby Queen, Bulls Blood. Free Tools - professional instructions, pH tester, 5 plant markers.",
+        "imageUrls": [
+        "https://res.cloudinary.com/danbeavers/image/upload/v1643484452/91vlm35yyZL._AC_SL1500__civicp.jpg"
+        ],
+        "quantity": 100,
+        "itemNo": "351153",
+        "discountPrice": 10.92,
+        "date": "2022-01-30T20:04:29.611Z",
+        "__v": 0
+    },
+    {
+        "_id": "61f6c274481e16304cbbbd95",
+        "customId": "promotion-flowers",
+        "name": "seedra wildflower mix seeds for indoor and outdoor planting - 10 grams - heirloom seeds - 1 pack X",
+        "currentPrice": 7.24,
+        "categories": "flowers-mix",
+        "description": "SEEDRA Wildflower Mix Seeds - contains 10 g in 1 Pack - a total of 25 easy-to-grow annual and perennial. The mix features 60% annual and 40% perennial wildflowers",
+        "imageUrls": [
+            "https://res.cloudinary.com/danbeavers/image/upload/v1643484677/917pMh7kNML._AC_SL1500__mbdifs.jpg"
+        ],
+        "quantity": 100,
+        "itemNo": "219571",
+        "discountPrice": 4.24,
+        "date": "2022-01-30T20:03:59.074Z",
+        "__v": 0
+        
+
+
+
+
+    }
+]
+    

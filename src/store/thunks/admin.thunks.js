@@ -1,4 +1,4 @@
-
+import * as Sentry from "@sentry/react";
 import axios from 'axios';
 import { API } from '../../app/constants';
 import { adminAddProductRequested, 
@@ -9,7 +9,16 @@ import { adminAddProductRequested,
          adminDeleteProductSuccess, 
          adminUpdateProductRequested, 
          adminUpdateProductError, 
-         adminUpdateProductSuccess, } from '../actions/admin.actions';
+         adminUpdateProductSuccess,
+         adminAddToSliderRequested, 
+         adminAddToSliderSuccess, 
+         adminAddToSliderError, 
+         adminDelFromSliderRequested, 
+         adminDelFromSliderSuccess, 
+         adminDelFromSliderError,
+         adminUpdateSliderRequested, 
+         adminUpdateSliderSuccess, 
+         adminUpdateSliderError, } from '../actions/admin.actions';
 
 
 
@@ -29,8 +38,9 @@ const adminAddProduct = (product) => (dispatch) => {
         .then(() => {
             dispatch(adminAddProductSuccess()); 
         })
-        .catch(() => {
+        .catch((err) => {
             dispatch(adminAddProductError());
+            Sentry.captureException(err);
         });
     }
 };  
@@ -52,8 +62,9 @@ const adminDeleteProduct = (productID) => (dispatch) => {
         .then(() => {
             dispatch(adminDeleteProductSuccess()); 
         })
-        .catch(() => {
+        .catch((err) => {
             dispatch(adminDeleteProductError());
+            Sentry.captureException(err);
         });
     }
 }; 
@@ -75,11 +86,89 @@ const adminUpdateProduct = (id, product) => (dispatch) => {
         .then(() => {
             dispatch(adminUpdateProductSuccess()); 
         })
-        .catch(() => {
+        .catch((err) => {
             dispatch(adminUpdateProductError());
+            Sentry.captureException(err);
         });
     }
 }; 
 
 
-export { adminAddProduct, adminDeleteProduct, adminUpdateProduct };
+
+const adminAddProductToSlider = (slide) => (dispatch) => { 
+
+    dispatch(adminAddToSliderRequested()); 
+
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      axios
+        .post(`${API}slides`, slide, {
+            headers: {
+                Authorization: `${token}`,
+            },
+        })
+        .then(() => {
+            dispatch(adminAddToSliderSuccess()); 
+        })
+        .catch((err) => {
+            dispatch(adminAddToSliderError());
+            Sentry.captureException(err);
+        });
+    }
+};  
+
+
+
+const adminDelProductFromSlider = (slideID) => (dispatch) => { 
+
+    dispatch(adminDelFromSliderRequested()); 
+
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      axios
+        .delete(`${API}slides/${slideID}`, {
+            headers: {
+                Authorization: `${token}`,
+            },
+        })
+        .then(() => {
+            dispatch(adminDelFromSliderSuccess()); 
+        })
+        .catch((err) => {
+            dispatch(adminDelFromSliderError());
+            Sentry.captureException(err);
+        });
+    }
+}; 
+
+
+
+const adminUpdateSlider = (slide) => (dispatch) => { 
+
+    dispatch(adminUpdateSliderRequested()); 
+
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      axios
+        .put(`${API}slides/${slide.customId}`, slide, {
+            headers: {
+                Authorization: `${token}`,
+            },
+        })
+        .then(() => {
+            dispatch(adminUpdateSliderSuccess()); 
+        })
+        .catch((err) => {
+            dispatch(adminUpdateSliderError());
+            Sentry.captureException(err);
+        });
+    }
+}; 
+
+
+export { adminAddProduct, 
+         adminDeleteProduct, 
+         adminUpdateProduct, 
+         adminAddProductToSlider, 
+         adminDelProductFromSlider, 
+         adminUpdateSlider, };

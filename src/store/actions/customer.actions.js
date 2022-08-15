@@ -14,6 +14,11 @@ export const addCustomerError = () => ({
   type: ADD_CUSTOMER_ERROR,
 });
 
+export const CLEAN_UP_ADD_CUSTOMER_STATE = "CLEAN_UP_ADD_CUSTOMER_STATE";
+export const cleanUpAddCustomerState = () => ({
+  type: CLEAN_UP_ADD_CUSTOMER_STATE,
+})
+
 export const LOGIN_CUSTOMER_REQUESTED = "LOGIN_CUSTOMER_REQUESTED";
 export const loginCustomerRequested = () => ({
   type: LOGIN_CUSTOMER_REQUESTED,
@@ -83,10 +88,25 @@ export const cleanUpLoginState = () => ({
   type: CLEAN_UP_LOGIN_STATE,
 })
 
-export const IS_RIGHT_PASSWORD = "IS_RIGHT_PASSWORD";
-export const isRightPassword = (isRight) => ({
-  type: IS_RIGHT_PASSWORD,
+export const IS_RIGHT_PASSWORD_REQUEST = "IS_RIGHT_PASSWORD_REQUEST";
+export const isRightPasswordRequest = () => ({
+  type: IS_RIGHT_PASSWORD_REQUEST
+})
+
+export const IS_RIGHT_PASSWORD_SUCCESS = "IS_RIGHT_PASSWORD_SUCCESS";
+export const isRightPasswordSuccess = (isRight) => ({
+  type: IS_RIGHT_PASSWORD_SUCCESS,
   payload: isRight
+})
+
+export const IS_RIGHT_PASSWORD_ERROR = "IS_RIGHT_PASSWORD_ERROR";
+export const isRightPasswordError = () => ({
+  type: IS_RIGHT_PASSWORD_ERROR,
+})
+
+export const CLEAN_UP_IS_RIGHT_PASSWORD = "CLEAN_UP_IS_RIGHT_PASSWORD";
+export const cleanUpIsRightPassword = () => ({
+  type: CLEAN_UP_IS_RIGHT_PASSWORD,
 })
 
 export const GET_USERDETAILS_REQUESTED = "GET_USERDETAILS_REQUESTED";
@@ -104,5 +124,3 @@ export const GET_USERDETAILS_ERROR = "GET_USERDETAILS_ERROR";
 export const getUserDetailsError = () => ({
   type: GET_USERDETAILS_ERROR,
 });
-
-

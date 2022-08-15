@@ -10,9 +10,9 @@ import classes from "../Header/HeaderStyles.jsx";
 import Textfield from './Components/FormsUI/Textfield';
 import ButtonWrapper from './Components/FormsUI/Submit/ButtonWrapper';
 import { loginCustomer } from '../../../store/thunks/customer.thunks';
-import { loginRequestSelector } from '../../../store/selectors/selectors';
+import { isRightPasswordSelector, loginRequestSelector } from '../../../store/selectors/selectors';
 import ErrorHandler from '../ErrorHandler/ErrorHandler.jsx';
-
+import { cleanUpLoginState } from '../../../store/actions/customer.actions';
 
 
 const style = makeStyles({
@@ -36,6 +36,7 @@ export default function LogIn() {
     const requestState = useSelector(loginRequestSelector);
     const navigation = useNavigate()
     const styles = style();
+    const isRightPassword = useSelector(isRightPasswordSelector)
     const dispatch = useDispatch()
     const INITIAL_FORM_STATE = {
         loginOrEmail: '',
@@ -45,6 +46,7 @@ export default function LogIn() {
     const FORM_VALIDATION = Yup.object().shape({
         loginOrEmail: Yup.string()
         .required('Required')
+        .matches(/[a-zA-Z]/, "Firstname can only contain Latin letters.")
         .email('Invalid email.'),
         password: Yup.string()
         .min(8, 'Password is 8 chars minimum.')
@@ -53,18 +55,20 @@ export default function LogIn() {
     })
 
     const [redirect, setRedirect] = useState(true)
-
-    useEffect(() => {
-      setRedirect(true)
+    useEffect(() => {   
       if(requestState === "error"){
-        setRedirect(!redirect)
+        setRedirect(false)
       }
       if(requestState === "success"){
         navigation("/")
       }
-    },[requestState])
+    }, [requestState])
 
-
+    useEffect(() => {
+      if (redirect === false && requestState === "error") {
+        dispatch(cleanUpLoginState());
+      }
+    },[redirect])
 
     const handleClose = () =>{
       navigation("/")
@@ -72,6 +76,9 @@ export default function LogIn() {
 
     const handleSubmit = values => {
       dispatch(loginCustomer(values)) 
+      if (redirect === false && isRightPassword === 'idle') {
+        setRedirect(!redirect);
+      }
     }
 
     return (

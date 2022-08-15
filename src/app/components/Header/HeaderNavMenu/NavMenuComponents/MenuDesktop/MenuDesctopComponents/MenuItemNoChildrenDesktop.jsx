@@ -1,13 +1,9 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { useEffect } from 'react';
 import PropTypes from "prop-types";
 import { MenuItem, Link } from "@mui/material";
 
 export default function MenuItemNoChildrenDesktop({ arrOfOptions }) {
-  useEffect(() => {
-    console.log('MenuItemNoChildrenDesktop:', `link for ${arrOfOptions[0][1]}: `, arrOfOptions[0][0],`;link for ${arrOfOptions[1][1]}: `, arrOfOptions[1][0])
-  }, [arrOfOptions])
-  
+ 
   return (
     <>
       {arrOfOptions.map((e, index) => (
@@ -36,7 +32,7 @@ export default function MenuItemNoChildrenDesktop({ arrOfOptions }) {
   );
 }
 
-// ==========================================================
+
 MenuItemNoChildrenDesktop.defaultProps ={
   arrOfOptions: [['option1-1', 'option1-2', 'option2-1', 'option2-2']],
 };

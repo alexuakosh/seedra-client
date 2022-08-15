@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { API } from "../../app/constants";
 import {
   downloadAllSlidesRequested,
@@ -13,11 +14,17 @@ const fetchSlides =
     axios
       .get(uri)
       .then((products) => {
-        dispatch(downloadAllSlidesSuccess(products));
-        return products;
+        const slidesItemId = products.data.map(item => item.productId);
+        const slides = {
+          products,
+          slidesItemId
+        }
+         dispatch(downloadAllSlidesSuccess(slides));
+        return slides;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(downloadAllSlidesError());
+        Sentry.captureException(err);
       });
   };
 

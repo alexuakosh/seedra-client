@@ -13,6 +13,7 @@ import CheckboxWrapper from './Components/FormsUI/Checkbox';
 import { addCustomer } from '../../../store/thunks/customer.thunks';
 import { customersRequestSelector } from '../../../store/selectors/selectors';
 import ErrorHandler from '../ErrorHandler/ErrorHandler.jsx';
+import { cleanUpAddCustomerState } from "../../../store/actions/customer.actions";
 
 
 const style = makeStyles({
@@ -33,8 +34,10 @@ const style = makeStyles({
 
 export default function SignUp() {
     const requestState = useSelector(customersRequestSelector);
+    const dispatch = useDispatch();
     const navigation = useNavigate()
     const styles = style();
+    
     const INITIAL_FORM_STATE = {
         firstName: '',
         lastName: '',
@@ -44,17 +47,16 @@ export default function SignUp() {
         termsOfService: '',
     };
 
-
-  const dispatch = useDispatch();
-
   const FORM_VALIDATION = Yup.object().shape({
     firstName: Yup.string()
       .min(2, "Too Short!")
       .max(30, "Too Long!")
-      .required("Required"),
+      .required("Required")
+      .matches(/[a-zA-Z]/, "Firstname can only contain Latin letters."),
     lastName: Yup.string()
       .min(2, "Too Short!")
       .max(30, "Too Long!")
+      .matches(/[a-zA-Z]/, "Firstname can only contain Latin letters.")
       .required("Required"),
     email: Yup.string().required("Required").email("Invalid email."),
     login: Yup.string()
@@ -83,18 +85,26 @@ export default function SignUp() {
     const valuesToPost = { ...values };
     delete valuesToPost.passwordConfirm;
     dispatch(addCustomer(valuesToPost));
+    if (redirect === false && requestState === 'idle') {
+      setRedirect(!redirect);
+    }
   };
 
-
+  
   useEffect(() => {
-    setRedirect(true)
     if(requestState === "error"){
-      setRedirect(!redirect)
+      setRedirect(false)
     }
     if(requestState === "success"){
       navigation("/")
     }
-  },[requestState])
+  }, [requestState])
+  
+  useEffect(() => {
+    if (redirect === false && requestState === "error") {
+      dispatch(cleanUpAddCustomerState());
+    }
+  },[redirect])
 
 
   return (

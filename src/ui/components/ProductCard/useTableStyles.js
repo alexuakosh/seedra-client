@@ -7,14 +7,6 @@ export const useTableStyles = makeStyles((theme) => ({
   },
   
   table: {
-    // '& .ReactVirtualized__Table__headerRow': {
-    //   ...(theme.direction === 'rtl' && {
-    //     paddingLeft: '0 !important',
-    //   }),
-    //   ...(theme.direction !== 'rtl' && {
-    //     paddingRight: undefined,
-    //   }),
-    // },
     "& .ReactVirtualized__Table__row": {
       border: `1px solid ${theme.palette.grey["300"]}`,
       borderRadius: "8px",

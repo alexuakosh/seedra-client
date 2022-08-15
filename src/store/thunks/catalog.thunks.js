@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { API } from "../../app/constants";
 import {
   downloadAllCategoriesRequested,
@@ -16,8 +17,9 @@ const fetchCategories =
         dispatch(downloadAllCategoriesSuccess(categories));
         return categories;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(downloadAllCategoriesError());
+        Sentry.captureException(err);
       });
   };
 

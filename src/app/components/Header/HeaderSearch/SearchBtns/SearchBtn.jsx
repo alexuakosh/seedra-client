@@ -1,6 +1,6 @@
 import SvgIcon from '@mui/material/SvgIcon';
 import SearchIcon from "@mui/icons-material/Search";
-// =========================================================
+
 
 export default function SearchBtn(props){
     return(
@@ -9,4 +9,3 @@ export default function SearchBtn(props){
       </SvgIcon>
     )
 };
-// ===========================================================

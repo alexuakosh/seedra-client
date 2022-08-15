@@ -13,10 +13,11 @@ const CartIcon = () => {
   const classes = useStyles();
 
   const totalCartQuantity = useSelector(cartQuantitySelector);
+  const slidesItemId = useSelector((state) => state.slides.slidesItemId);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchCart());
+    dispatch(fetchCart(slidesItemId));
   }, []);
 
   

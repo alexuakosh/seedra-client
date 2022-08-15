@@ -12,8 +12,8 @@ import { styled } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 
-export default function MenuItemWithChildrenMobile({ arrOfOptions }) {
-  // ==========================
+export default function MenuItemWithChildrenMobile({ arrOfOptions, onClose }) {
+  
   const AccordionSummary = styled((props) => (
     <MuiAccordionSummary
       expandIcon={
@@ -44,8 +44,8 @@ export default function MenuItemWithChildrenMobile({ arrOfOptions }) {
       marginLeft: theme.spacing(0),
     },
   }));
-  // =========================
-  // ============================= Render ============================
+  
+
   return (
     <Box>
       {arrOfOptions.map((item, index) => (
@@ -63,7 +63,8 @@ export default function MenuItemWithChildrenMobile({ arrOfOptions }) {
                   "&:hover": { backgroundColor: "white" },
                 }}
               >
-                <Link
+                <Link 
+                  onClick={() => onClose()}
                   underline="none"
                   sx={{ pl: "16px", color: "#1F2533", fontWeight: "400" }}
                 >
@@ -76,7 +77,8 @@ export default function MenuItemWithChildrenMobile({ arrOfOptions }) {
             {item.name.map((subItem, i) => (
               <Box key={`${subItem}${i}`} sx={{ pl: "80px" }}>
                 <AccordionDetails>
-                  <Link
+                  <Link 
+                    onClick={() => onClose()}
                     component={RouterLink}
                     to={`products?categories=${subItem}`}
                     key={subItem}
@@ -99,7 +101,7 @@ export default function MenuItemWithChildrenMobile({ arrOfOptions }) {
     </Box>
   );
 }
-// ==================================================================
+
 MenuItemWithChildrenMobile.defaultProps = {
   arrOfOptions: [
     { parentId: "option1", name: ["subOption1-1", "subOption1-2"] },
@@ -114,4 +116,5 @@ MenuItemWithChildrenMobile.propTypes = {
       name: PropTypes.arrayOf(PropTypes.string),
     })
   ),
+  onClose: PropTypes.func, 
 };

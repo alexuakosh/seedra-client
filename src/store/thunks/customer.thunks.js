@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { API } from "../../app/constants";
 import {
   addCustomerRequested,
@@ -12,12 +13,13 @@ import {
   customerUpdateRequest,
   getCustomerSuccess,
   customerUpdateSuccess,
-  isRightPassword,
   getUserDetailsRequested, 
   getUserDetailsSuccess, 
   getUserDetailsError,
   getOrdersSuccess,
   getOrdersError,
+  isRightPasswordError,
+  isRightPasswordSuccess,
 } from "../actions/customer.actions";
 
 
@@ -28,8 +30,9 @@ const addCustomer = (customer) => (dispatch) => {
     .then((savedCustomer) => {
       dispatch(addCustomerSuccess(savedCustomer));
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(addCustomerError());
+      Sentry.captureException(err);
     });
 }; 
 
@@ -37,19 +40,25 @@ const addCustomer = (customer) => (dispatch) => {
 
 const getUserDetails = () => (dispatch) => {
 
-  dispatch(getUserDetailsRequested()); 
+  const token = localStorage.getItem("jwt"); 
+
+  if (token) {
+  dispatch(getUserDetailsRequested());  
+
   axios
-    .get(`${API}customers/customer`, {
-      headers: {
-        Authorization: `${localStorage.getItem("jwt")}`, 
-      },
-    })
-    .then((userDetails) => {
-        dispatch(getUserDetailsSuccess(userDetails.data.isAdmin));
-    })
-    .catch(() => {
-      dispatch(getUserDetailsError());
-    });
+      .get(`${API}customers/customer`, {
+        headers: {
+          Authorization: `${token}`, 
+        },
+      })
+      .then((userDetails) => {
+          dispatch(getUserDetailsSuccess(userDetails.data.isAdmin));
+      })
+      .catch((err) => {
+        dispatch(getUserDetailsError());
+        Sentry.captureException(err);
+      });
+  }
 };
 
 
@@ -63,27 +72,33 @@ const loginCustomer = (userData) => (dispatch) => {
       dispatch(loginCustomerSuccess(loginResult));
       dispatch(getUserDetails());      
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(loginCustomerError());
+      Sentry.captureException(err);
     });
 }; 
 
 
 const getCustomer = () => (dispatch) => {
   const token = localStorage.getItem("jwt");
-  dispatch(getCustomerRequest());
+
+  if (token) {
+  dispatch(getCustomerRequest()); 
+  
   axios
-    .get(`${API}customers/customer`, {
-      headers: {
-        Authorization: `${token}`,
-      },
-    })
-    .then((currentCustomer) => {
-      dispatch(getCustomerSuccess(currentCustomer.data));
-    })
-    .catch(() => {
-      dispatch(customerUpdateError());
-    });
+      .get(`${API}customers/customer`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      })
+      .then((currentCustomer) => {
+        dispatch(getCustomerSuccess(currentCustomer.data));
+      })
+      .catch((err) => {
+        dispatch(customerUpdateError());
+        Sentry.captureException(err);
+      });
+  }
 };
 
 const updateCustomer = (modifiedCustomer) => (dispatch) => {
@@ -106,12 +121,12 @@ const updateCustomer = (modifiedCustomer) => (dispatch) => {
       )
       .then((updatedPassword) => {
         if (updatedPassword.data.password === "Password does not match") {
-          dispatch(isRightPassword(false));
+          dispatch(isRightPasswordError());
         } else {
-          dispatch(isRightPassword(true));
+          dispatch(isRightPasswordSuccess());
         }
       })
-      .catch(() => console.log("Some error on password change"));
+      .catch((err) => Sentry.captureException(err));
   }
 
   const customerToPut = { ...modifiedCustomer };
@@ -127,8 +142,9 @@ const updateCustomer = (modifiedCustomer) => (dispatch) => {
     .then((updatedCustomer) => {
       dispatch(customerUpdateSuccess(updatedCustomer));
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(customerUpdateError());
+      Sentry.captureException(err);
     });
 };
 
@@ -144,8 +160,9 @@ const getOrders = () => (dispatch) =>  {
     .then((orders) => {
       dispatch(getOrdersSuccess(orders.data));
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(getOrdersError())
+      Sentry.captureException(err);
     })
 
   }

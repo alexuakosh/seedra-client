@@ -1,21 +1,24 @@
 
-import { useState } from "react";
+import { useState } from "react"; 
+import { useNavigate, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { IconButton, Divider, ListItemIcon, MenuItem, Menu } from "@mui/material";
 import { AccountCircle, Settings, Logout } from "@mui/icons-material";
-import { Link } from "react-router-dom";
 
 
 
 
 const ProfileMenuAdmin = ({ onClose }) => { 
 
+    const navigation = useNavigate();
+
     const [anchorEl, setAnchorEl] = useState(null); 
 
     const logout = () => {
         localStorage.removeItem('jwt'); 
-        window.location.reload(); 
+        navigation('/'); 
+        window.location.reload();  
     } 
 
 
@@ -73,7 +76,7 @@ const ProfileMenuAdmin = ({ onClose }) => {
                     height: 10,
                     bgcolor: 'background.paper',
                     transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0, 
+                    zIndex: '150',  
                     },
                 },
                 }}

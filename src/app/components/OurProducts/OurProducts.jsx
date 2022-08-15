@@ -1,9 +1,7 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Tabs } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import Tab from "../../../ui/components/Tab/Tab.jsx";
-import Tabs from "../../../ui/components/Tabs/Tabs.jsx";
+import StyledTab from "./StyledTab/StyledTab.jsx";
 import Icon from "../../../ui/components/Icon/Icon.jsx";
 import {
   downloadRequestStates,
@@ -15,35 +13,7 @@ import {
 } from "../../../store/selectors/selectors";
 import ErrorHandler from "../ErrorHandler/ErrorHandler.jsx";
 import { fetchFilteredProducts } from "../../../store/thunks/products.thunks";
-
-const useStyles = makeStyles((theme) => ({
-  tab: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    flexGrow: "1",
-    "&:not(:last-child)": {
-      marginRight: "12px",
-    },
-    "& > svg": {
-      marginRight: "20px",
-      color: theme.palette.primary.main,
-    },
-  },
-
-  ourProducts: {
-    ...theme.mixins.wrapper,
-    paddingTop: "60px",
-    paddingBottom: "60px",
-  },
-  navigation: {
-    marginBottom: "25px",
-  },
-  ourProductHeading: {
-    marginBottom: "40px !important",
-    fontWeight: "bold !important",
-  },
-}));
+import useStyles from "./OurProductsStyle";
 
 export const productsSelector = (state) => {
   if (state.products.selectedCategories === "all") {
@@ -75,8 +45,7 @@ const OurProducts = () => {
   const dispatch = useDispatch();
 
   const categories = useSelector(mainCategoriesSelector);
-  if (downloadRequestState === downloadRequestStates.LOADING)
-    return <div>Loading...</div>; // Here must be a loader
+
   if (downloadRequestState === downloadRequestStates.ERROR)
     return (
       <ErrorHandler
@@ -87,24 +56,29 @@ const OurProducts = () => {
     );
 
   const handleClick = (event) => {
-    if (event.target.dataset.category === "all") {
-      dispatch(
-        fetchFilteredProducts(`perPage=${PRODUCTS_NUMBER_ON_MAIN_PAGE}`)
-      );
-    } else if (event.target.dataset.category === "bundles") {
-      dispatch(
-        fetchFilteredProducts(
-          `perPage=${PRODUCTS_NUMBER_ON_MAIN_PAGE}&categories=${categories
-            .map((category) => category.name)
-            .reduce((acc, curr) => `${acc}${curr}-mix,`)}`
-        )
-      );
-    } else {
-      dispatch(
-        fetchFilteredProducts(
-          `perPage=${PRODUCTS_NUMBER_ON_MAIN_PAGE}&categories=${event.target.dataset.category},${event.target.dataset.category}-mono,${event.target.dataset.category}-mix`
-        )
-      );
+    const tabsCategories = Array.from(categories, (obj) => obj.name);
+    const tabCategory = event.target.dataset.category;
+
+    if (tabsCategories.includes(tabCategory)) {
+      if (tabCategory === "all") {
+        dispatch(
+          fetchFilteredProducts(`perPage=${PRODUCTS_NUMBER_ON_MAIN_PAGE}`)
+        );
+      } else if (tabCategory === "bundles") {
+        dispatch(
+          fetchFilteredProducts(
+            `perPage=${PRODUCTS_NUMBER_ON_MAIN_PAGE}&categories=${tabsCategories.reduce(
+              (acc, curr) => `${acc}${curr}-mix,`
+            )}`
+          )
+        );
+      } else {
+        dispatch(
+          fetchFilteredProducts(
+            `perPage=${PRODUCTS_NUMBER_ON_MAIN_PAGE}&categories=${tabCategory},${tabCategory}-mono,${tabCategory}-mix`
+          )
+        );
+      }
     }
   };
 
@@ -113,7 +87,7 @@ const OurProducts = () => {
   };
 
   const categoriesTabs = categories.map((category) => (
-    <Tab
+    <StyledTab
       data-category={category.name}
       className={classes.tab}
       label={category.name}
@@ -123,7 +97,6 @@ const OurProducts = () => {
       icon={<Icon icon={Icon.icons[category.icon]} />}
     />
   ));
-
   return (
     <>
       <Box component="section" className={classes.ourProducts}>
@@ -138,10 +111,18 @@ const OurProducts = () => {
             </Typography>
             <Box>
               <Tabs
+                className={classes.tabsContainer}
+                aria-label={"our-products-nav"}
                 value={value}
                 onChange={handleChange}
                 onClick={handleClick}
                 variant="scrollable"
+                allowScrollButtonsMobile={true}
+                TabIndicatorProps={{
+                  style: {
+                    display: "none",
+                  },
+                }}
               >
                 {categoriesTabs}
               </Tabs>

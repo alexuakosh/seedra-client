@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   Button,
   Card,
@@ -26,50 +27,45 @@ import {
   ListItem,
   List,
   Link,
-  Modal,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import Carousel from "react-material-ui-carousel";
-
-import CloseIcon from "@mui/icons-material/Close";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import SyncAltOutlinedIcon from "@mui/icons-material/SyncAltOutlined";
-
-import CheckIcon from "@mui/icons-material/Check";
-
 import RenderComponent from "../../../app/hoc/RenderComponent.jsx";
 import { useMainStyles } from "./useMainStyles";
 import { useProductPageStyles } from "./useProductPageStyles";
 import { useBasketStyles } from "./useBasketStyles";
 import { useFiltersStyles } from "./useFiltersStyles";
 import Icon from "../Icon/Icon.jsx";
+import Vector from "../../../app/components/MainPageCarousel/carouselImg/Vector.svg";
 
 import {
   cartSelector,
   mainCategoriesSelector,
   isAdminStateSelector,
-  adminDeleteProductRequestSelector,
   loginStateSelector,
+  downloadCategoriesRequestStateSelector,
+  productSelector,
 } from "../../../store/selectors/selectors";
+import { addedProductToCart } from "../../../store/actions/cart.actions";
 import {
   addProductToCart,
   fetchCart,
   decreaseProductQuantity,
   changeProductQuantity,
-} from "../../../store/thunks/cart.thunks"; 
-
-import { adminDeleteProduct } from "../../../store/thunks/admin.thunks";
-import { adminDeleteProductIdle } from "../../../store/actions/admin.actions";
+} from "../../../store/thunks/cart.thunks";
 
 import AddToCartModal from "../AddToCardModal/AddToCartModal.jsx";
-import AddProduct from "../../../app/components/AdminPanel/AddProduct.jsx";
+import BuiltInActions from "../../../app/components/AdminPanel/BuiltInActions/BuiltInActions.jsx";
 import Spinner from "../Spinner/Spinner.jsx";
 import { useRating } from "./useRating.jsx";
 import { useWishlist } from "./useWishlist.jsx";
+import fetchSlides from "../../../store/thunks/slides.thunks";
+import { fetchProductComments } from "../../../store/thunks/comments.thunks";
+import { downloadRequestStates } from "../../../app/constants/index";
 
 export const ProductCardRender = ({ data }) => {
   const {
@@ -89,44 +85,30 @@ export const ProductCardRender = ({ data }) => {
     itemAbout,
     _id,
     cartQuantity,
-  } = data;  
-
+  } = data;
 
   const [isOnModal, toggleIsOnModal] = useState(false);
   const [productAmount, setProductAmount] = useState(1);
   const [totalPrice, setTotalPrice] = useState(currentPrice);
   const [discontStart] = useState(10);
-
-  const [open, setOpen] = useState(false); 
-  
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const dispatch = useDispatch(); 
-  const navigation = useNavigate();
-
+  const dispatch = useDispatch();
   const isLogin = useSelector(loginStateSelector);
   const isAdmin = useSelector(isAdminStateSelector);
   const cart = useSelector(cartSelector);
-
-  const isProductDeleted = useSelector(adminDeleteProductRequestSelector);
-
+  const slideList = useSelector(productSelector);
+  const slidesItemId = [slideList];
+  const addedToCart = useSelector((state) => state.cart.editCartState);
 
   useEffect(() => {
-    dispatch(fetchCart());
-    window.scrollTo(0, 0);
+    if(isFiltersPage){
+      dispatch(fetchSlides())
+    }
+    
+    dispatch(fetchCart(slidesItemId));
+    dispatch(addedProductToCart());
   }, []);
 
-  useEffect(() => {
-    setTotalPrice((prevProductAmount) =>
-      prevProductAmount <= discontStart
-        ? productAmount * currentPrice
-        : productAmount * discountPrice
-    );
-  }, [productAmount, discontStart]);
-
   const navigate = useNavigate();
-
   const mainClasses = useMainStyles();
   const productPageClasses = useProductPageStyles();
   const basketClasses = useBasketStyles();
@@ -142,16 +124,18 @@ export const ProductCardRender = ({ data }) => {
     currencyDisplay: "symbol",
   });
 
-  const reloadAfterDelete = () => {
-    setTimeout(() => {
-      dispatch(adminDeleteProductIdle());
-      navigation('/');
-    }, 3000);
-  };
-
   const [ratingValue, rateProduct] = useRating(data);
+
+  useEffect(() => {
+    data._id && dispatch(fetchProductComments(data._id));
+  }, [ratingValue, data._id]);
+
   const [isFavourite, toggleInWishlist] = useWishlist(_id);
- 
+
+  const downloadCategoriesState = useSelector(
+    downloadCategoriesRequestStateSelector
+  );
+
   if (isBasket) {
     return (
       <Card>
@@ -180,7 +164,7 @@ export const ProductCardRender = ({ data }) => {
           >
             <Button
               onClick={() => {
-                dispatch(decreaseProductQuantity(_id));
+                dispatch(decreaseProductQuantity(_id, slidesItemId));
               }}
               variant="text"
               disabled={cartQuantity <= 1}
@@ -201,7 +185,7 @@ export const ProductCardRender = ({ data }) => {
             />
             <Button
               onClick={() => {
-                dispatch(addProductToCart(_id));
+                dispatch(addProductToCart(_id, slidesItemId));
               }}
               variant="text"
               disabled={cartQuantity >= quantity}
@@ -210,7 +194,6 @@ export const ProductCardRender = ({ data }) => {
               {"+"}
             </Button>
           </ButtonGroup>
-
           <Typography
             className={basketClasses.productCardName}
             variant="h3"
@@ -292,7 +275,6 @@ export const ProductCardRender = ({ data }) => {
                 ))}
               </Carousel>
             </Grid>
-
             <Grid item xs={12} md={7} lg={7}>
               <CardContent className={productPageClasses.productCardContent}>
                 <Typography
@@ -309,14 +291,18 @@ export const ProductCardRender = ({ data }) => {
                   spacing={1}
                 >
                   <Chip
-                    color="disable"
                     label={quantity > 0 ? "AVAILABLE" : "NOT AVAILABLE"}
-                    icon={
-                      quantity > 0 ? (
-                        <CheckIcon className={productPageClasses.buttonIcon} />
-                      ) : (
-                        <CloseIcon className={productPageClasses.buttonIcon} />
-                      )
+                    className={productPageClasses.chipLabel}
+                    sx={
+                      quantity > 0
+                        ? {
+                            backgroundColor: "rgba(53, 151, 64, 0.1)",
+                            color: "rgb(53, 151, 64)",
+                          }
+                        : {
+                            backgroundColor: "rgba(254, 109, 109, 0.1)",
+                            color: "rgb(254, 109, 109)",
+                          }
                     }
                   />
                   <Chip
@@ -324,10 +310,15 @@ export const ProductCardRender = ({ data }) => {
                     className={productPageClasses.productCardAvailable}
                     label={mainCategory?.name.toUpperCase()}
                     icon={
-                      <Icon
-                        className={productPageClasses.buttonIcon}
-                        icon={Icon.icons[mainCategory?.icon]}
-                      />
+                      downloadCategoriesState ===
+                      downloadRequestStates.SUCCESS ? (
+                        <Icon
+                          className={productPageClasses.buttonIcon}
+                          icon={Icon.icons[mainCategory?.icon]}
+                        />
+                      ) : (
+                        <Spinner />
+                      )
                     }
                     variant="outlined"
                   />
@@ -373,61 +364,100 @@ export const ProductCardRender = ({ data }) => {
                 </TableContainer>
               </CardContent>
               <CardActions className={productPageClasses.productActionsBox}>
-                <Box
-                  className={productPageClasses.customScrollbar}
-                  sx={{ width: "100%" }}
-                >
-                  <Typography component="div" color="text.primary">
-                    Size{" "}
-                    <Typography component="span" sx={{ fontSize: "16px" }}>
-                      {+productAmount} PACK
+                {quantity > 0 && (
+                  <Box
+                    className={productPageClasses.customScrollbar}
+                    sx={{ width: "100%" }}
+                  >
+                    <Typography component="div" color="text.primary">
+                      Size{" "}
+                      <Typography component="span" sx={{ fontSize: "16px" }}>
+                        {+productAmount} PACK
+                      </Typography>
                     </Typography>
-                  </Typography>
 
-                  {isAdmin === false && (
-                    <ButtonGroup
-                      className={productPageClasses.amountInputGroup}
-                      color="primary"
-                      variant="outlined"
-                      aria-label="outlined primary button group"
-                    >
-                      <Button
-                        onClick={() => {
-                          setProductAmount(
-                            (prevProductAmount) => +prevProductAmount - 1
-                          );
-                        }}
-                        variant="text"
-                        disabled={productAmount <= 1}
+                    {isAdmin === false && (
+                      <ButtonGroup
+                        className={productPageClasses.amountInputGroup}
+                        color="primary"
+                        variant="outlined"
+                        aria-label="outlined primary button group"
                       >
-                        {"-"}
-                      </Button>
-                      <FilledInput
-                        inputProps={{ sx: { textAlign: "center" } }}
-                        disableUnderline={true}
-                        hiddenLabel={true}
-                        value={productAmount}
-                        onChange={(e) => setProductAmount(+e.target.value)}
-                        id="product-amount"
-                        className={productPageClasses.productAmountInput}
-                      />
-                      <Button
-                        onClick={() => {
-                          setProductAmount(+productAmount + 1);
-                        }}
-                        variant="text"
-                        disabled={productAmount >= quantity}
-                      >
-                        {"+"}
-                      </Button>
-                    </ButtonGroup>
-                  )}
-                </Box>
-                <Box className={productPageClasses.productCardActionBtns}>
-                  <Box>
-                    {productAmount > discontStart && (
+                        <Button
+                          onClick={() => {
+                            setProductAmount(
+                              (prevProductAmount) => +prevProductAmount - 1
+                            );
+                          }}
+                          variant="text"
+                          disabled={productAmount <= 1}
+                        >
+                          {"-"}
+                        </Button>
+                        <FilledInput
+                          inputProps={{ sx: { textAlign: "center" } }}
+                          disableUnderline={true}
+                          hiddenLabel={true}
+                          value={productAmount}
+                          onChange={(e) => {
+                            if (/[0-9]/.test(+e.target.value)) {
+                              setProductAmount(+e.target.value);
+                            }
+                          }}
+                          id="product-amount"
+                          className={productPageClasses.productAmountInput}
+                        />
+                        <Button
+                          onClick={() => {
+                            setProductAmount(+productAmount + 1);
+                          }}
+                          variant="text"
+                          disabled={productAmount >= quantity}
+                        >
+                          {"+"}
+                        </Button>
+                      </ButtonGroup>
+                    )}
+                  </Box>
+                )}
+                <Box
+                  className={productPageClasses.productCardActionBtns}
+                  sx={{ flexWrap: "wrap" }}
+                >
+                  <Box display="flex">
+                    {slidesItemId.includes(_id) && (
+                      <Box
+                        component="img"
+                        pl={{ xs: "0vw", sm: "0px" }}
+                        pr={"2px"}
+                        overflow="visible"
+                        width={{ xs: "12px", sm: "12px", md: "12px" }}
+                        src={Vector}
+                      ></Box>
+                    )}
+                    {slidesItemId.includes(_id) ||
+                    productAmount > discontStart ? (
+                      <>
+                        <Typography
+                          className={productPageClasses.productCardPrice}
+                          component="div"
+                          variant="h5"
+                          color="text.primary"
+                        >
+                          {localPrice.format(productAmount * +discountPrice)}
+                        </Typography>
+                        <Typography
+                          className={productPageClasses.productCardOldPrice}
+                          component="div"
+                          variant="h5"
+                          color="text.primary"
+                        >
+                          {localPrice.format(productAmount * +currentPrice)}
+                        </Typography>
+                      </>
+                    ) : (
                       <Typography
-                        className={productPageClasses.productCardOldPrice}
+                        className={productPageClasses.productCardPrice}
                         component="div"
                         variant="h5"
                         color="text.primary"
@@ -435,18 +465,15 @@ export const ProductCardRender = ({ data }) => {
                         {localPrice.format(productAmount * +currentPrice)}
                       </Typography>
                     )}
-                    <Typography
-                      className={productPageClasses.productCardPrice}
-                      component="div"
-                      variant="h5"
-                      color="text.primary"
-                    >
-                      {localPrice.format(totalPrice)}
-                    </Typography>
                   </Box>
 
                   {isAdmin === false && (
-                    <Box className={productPageClasses.productCardButtons}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      className={productPageClasses.productCardButtons}
+                      sx={{ position: "relative" }}
+                    >
                       {isLogin && (
                         <IconButton
                           className={productPageClasses.productCardButton}
@@ -461,97 +488,51 @@ export const ProductCardRender = ({ data }) => {
                           )}
                         </IconButton>
                       )}
-                      <Button
-                        className={productPageClasses.productCardButtonBasket}
-                        variant="contained"
-                        onClick={() =>
-                          dispatch(addProductToCart(_id, productAmount))
-                        }
-                      >
-                        Add to card
-                      </Button>
+                      {quantity > 0 && (
+                        <>
+                          {addedToCart === "success" ? (
+                            <Button
+                              className={
+                                productPageClasses.productCardButtonBasket
+                              }
+                              variant="contained"
+                              onClick={() => {
+                                dispatch(addedProductToCart());
+                              }}
+                            >
+                              Added to card
+                            </Button>
+                          ) : (
+                            <Button
+                              className={
+                                productPageClasses.productCardButtonBasket
+                              }
+                              variant="contained"
+                              onClick={() =>
+                                productAmount &&
+                                quantity > 0 &&
+                                dispatch(
+                                  changeProductQuantity(
+                                    _id,
+                                    productAmount,
+                                    name,
+                                    totalPrice / productAmount,
+                                    imageUrls,
+                                    currentPrice,
+                                    discountPrice,
+                                    slidesItemId
+                                  )
+                                )
+                              }
+                            >
+                              Add to cart
+                            </Button>
+                          )}
+                        </>
+                      )}
                     </Box>
                   )}
-
-                  {isAdmin && (
-                    <div>
-                      <IconButton onClick={handleOpen}>
-                        <SyncAltOutlinedIcon
-                          sx={{ fontSize: "26px", color: "#FF6D6D" }}
-                        />
-                      </IconButton>
-
-                      <Modal
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                      >
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            overflow: "scroll",
-                            top: "50%",
-                            left: "75%",
-                            transform: "translate(-50%, -50%)",
-                            width: 370,
-                            height: 400,
-                            bgcolor: "white",
-                            boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                            borderRadius: "10px",
-                            p: 6,
-                            "@media (max-width: 900px)": {
-                              top: "50%",
-                              left: "50%",
-                              width: 330,
-                              pt: 5,
-                              pb: 5,
-                              pl: 2,
-                              pr: 2,
-                            },
-                          }}
-                        >
-                          <Typography
-                            id="modal-modal-title"
-                            variant="h6"
-                            component="h2"
-                            sx={{ mb: "30px", ml: "10px", fontSize: 16 }}
-                          > 
-                            What do you want to update: 
-                          </Typography>
-
-                          <AddProduct product={data} 
-                                      onClose={handleClose} />
-
-                          </Box>
-                      </Modal>
-
-                      {isProductDeleted === "idle" && (
-                        <IconButton
-                          onClick={() => {
-                            dispatch(adminDeleteProduct(_id));
-                            reloadAfterDelete();
-                          }}
-                        >
-                          <DeleteOutlinedIcon
-                            sx={{ fontSize: "26px", color: "#FF6D6D" }}
-                          />
-                        </IconButton>
-                      )}
-
-                      {isProductDeleted === "success" && (
-                        <span
-                          style={{
-                            margin: "10px 0 5px 30px",
-                            color: "#FF6D6D",
-                            fontFamily: "'Lexend', sans-serif",
-                          }}
-                        >
-                          product has been deleted successfully
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  {isAdmin && <BuiltInActions product={data} />}
                 </Box>
               </CardActions>
             </Grid>
@@ -563,15 +544,15 @@ export const ProductCardRender = ({ data }) => {
               variant="h2"
               color="text.primary"
             >
-              Product information.
+              Product information
             </Typography>
             <List
               className={productPageClasses.productCardAboutHeader}
               variant="body1"
               color="text.primary"
             >
-              {itemAbout.map((item, i) => (
-                <ListItem key={i}>
+              {itemAbout?.map((item, i) => (
+                <ListItem key={i} sx={{ padding: "8px 0" }}>
                   <Typography>{item}</Typography>
                 </ListItem>
               ))}
@@ -588,15 +569,16 @@ export const ProductCardRender = ({ data }) => {
         <Card className={filtersClasses.productCard}>
           <CardHeader
             className={mainClasses.productCardHeader}
-            action={
-              <IconButton
+            action={isLogin &&
+              isAdmin === false && 
+              (<IconButton
                 className={mainClasses.productCardButton}
                 color="warning"
                 aria-label="add to favourite"
                 onClick={toggleInWishlist}
               >
                 {isFavourite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              </IconButton>
+              </IconButton>)
             }
           />
 
@@ -611,8 +593,10 @@ export const ProductCardRender = ({ data }) => {
             className={mainClasses.productCardRating}
             name="half-rating"
             value={ratingValue}
-            precision={0.5}
-            onChange={(e) => {rateProduct(e)}}
+            precision={1}
+            onChange={(e) => {
+              rateProduct(e);
+            }}
           />
 
           <CardContent className={mainClasses.productCardContent}>
@@ -639,40 +623,92 @@ export const ProductCardRender = ({ data }) => {
                 {name}
               </Typography>
             </Link>
-            <Typography
-              className={mainClasses.productCardPrice}
-              component="span"
-              variant="h6"
-              color="text.primary"
-            >
-              {localPrice.format(currentPrice)}
-            </Typography>
+            {slidesItemId.includes(_id) && quantity > 0 && (
+              <Box
+                component="img"
+                pl={{ xs: "0vw", sm: "0px" }}
+                pr={"2px"}
+                overflow="visible"
+                width={{ xs: "12px", sm: "12px", md: "12px" }}
+                src={Vector}
+              ></Box>
+            )}
+            {slidesItemId.includes(_id)
+              ? quantity > 0 && (
+                  <Typography
+                    className={mainClasses.productCardPrice}
+                    component="span"
+                    variant="h6"
+                    color="text.primary"
+                  >
+                    {localPrice.format(discountPrice)}
+                  </Typography>
+                )
+              : quantity > 0 && (
+                  <Typography
+                    className={mainClasses.productCardPrice}
+                    component="span"
+                    variant="h6"
+                    color="text.primary"
+                  >
+                    {localPrice.format(currentPrice)}
+                  </Typography>
+                )}
+            {quantity <= 0 && (
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="space-between"
+                alignItems="center"
+                paddingTop="16px"
+              >
+                <Typography
+                  className={mainClasses.notAvailableCardPrice}
+                  component="span"
+                  variant="h6"
+                  color="text.primary"
+                >
+                  {localPrice.format(currentPrice)}
+                </Typography>
+                <Typography
+                  className={mainClasses.notAvailableProduct}
+                  component="span"
+                  variant="h6"
+                  color="text.primary"
+                >
+                  Out of Stock
+                </Typography>
+              </Box>
+            )}
+            {/* </CardContent> */}
+            <CardActions className={mainClasses.productActionsBox}>
+              {quantity > 0 && (
+                <IconButton
+                  className={filtersClasses.productCardButtonBasket}
+                  aria-label="add to basket"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    toggleIsOnModal(true);
+                  }}
+                >
+                  <ShoppingCartOutlinedIcon />
+                  <AddToCartModal
+                    data={data}
+                    discontStart={discontStart}
+                    localPrice={localPrice}
+                    totalPrice={totalPrice}
+                    setTotalPrice={setTotalPrice}
+                    isOnModal={isOnModal}
+                    toggleIsOnModal={toggleIsOnModal}
+                    cart={cart}
+                    _id={_id}
+                    slidesItemId={slidesItemId}
+                  />
+                </IconButton>
+              )}
+            </CardActions>
           </CardContent>
-
-          <CardActions className={mainClasses.productActionsBox}>
-            <IconButton
-              className={filtersClasses.productCardButtonBasket}
-              aria-label="add to basket"
-              color="primary"
-              variant="contained"
-              onClick={() => {
-                toggleIsOnModal(true);
-              }}
-            >
-              <ShoppingCartOutlinedIcon />
-              <AddToCartModal
-                data={data}
-                discontStart={discontStart}
-                localPrice={localPrice}
-                totalPrice={totalPrice}
-                setTotalPrice={setTotalPrice}
-                isOnModal={isOnModal}
-                toggleIsOnModal={toggleIsOnModal}
-                cart={cart}
-                _id={_id}
-              />
-            </IconButton>
-          </CardActions>
         </Card>
       </Grid>
     );
@@ -704,7 +740,6 @@ export const ProductCardRender = ({ data }) => {
             )
           }
         />
-
         <CardMedia
           className={mainClasses.productCardMedia}
           component="img"
@@ -715,12 +750,17 @@ export const ProductCardRender = ({ data }) => {
         <Rating
           className={mainClasses.productCardRating}
           name="half-rating"
-          precision={0.5}
+          precision={1}
           value={ratingValue}
-          onChange={(e) => {rateProduct(e)}}
+          onChange={(e) => {
+            rateProduct(e);
+          }}
         />
 
-        <CardContent className={mainClasses.productCardContent}>
+        <CardContent
+          className={mainClasses.productCardContent}
+          sx={{ padding: "0px" }}
+        >
           <Link
             style={{
               color: "inherit",
@@ -742,71 +782,131 @@ export const ProductCardRender = ({ data }) => {
               {name}
             </Typography>
           </Link>
-          <Typography
-            className={mainClasses.productCardPrice}
-            component="span"
-            variant="h5"
-            color="text.primary"
-          >
-            {localPrice.format(currentPrice)}
-          </Typography>
+          <Box display="flex" justifyContent="space-between">
+            {slidesItemId.includes(_id) && quantity > 0 && (
+              <Box
+                component="img"
+                pl={{ xs: "0vw", sm: "0px" }}
+                pr={"2px"}
+                overflow="visible"
+                width={{ xs: "12px", sm: "12px", md: "12px" }}
+                src={Vector}
+              ></Box>
+            )}
+            {slidesItemId.includes(_id)
+              ? quantity > 0 && (
+                  <Typography
+                    className={mainClasses.productCardPrice}
+                    component="span"
+                    variant="h6"
+                    color="text.primary"
+                  >
+                    {localPrice.format(discountPrice)}
+                  </Typography>
+                )
+              : quantity > 0 && (
+                  <Typography
+                    className={mainClasses.productCardPrice}
+                    component="span"
+                    variant="h6"
+                    color="text.primary"
+                  >
+                    {localPrice.format(currentPrice)}
+                  </Typography>
+                )}
+            {quantity <= 0 && (
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="space-between"
+                alignItems="center"
+                paddingTop="16px"
+                width="100%"
+              >
+                <Typography
+                  className={mainClasses.notAvailableCardPrice}
+                  component="span"
+                  variant="h6"
+                  color="text.primary"
+                >
+                  {localPrice.format(currentPrice)}
+                </Typography>
+                <Typography
+                  className={mainClasses.notAvailableProduct}
+                  component="span"
+                  variant="h6"
+                  color="text.primary"
+                >
+                  Out of Stock
+                </Typography>
+              </Box>
+            )}
+            <CardActions className={mainClasses.productActionsBox}>
+              {quantity > 0 && (
+                <IconButton
+                  className={mainClasses.productCardButtonBasket}
+                  aria-label="add to basket"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    toggleIsOnModal(true);
+                  }}
+                >
+                  <ShoppingCartOutlinedIcon />
+                  <AddToCartModal
+                    data={data}
+                    discontStart={discontStart}
+                    localPrice={localPrice}
+                    totalPrice={totalPrice}
+                    setTotalPrice={setTotalPrice}
+                    isOnModal={isOnModal}
+                    toggleIsOnModal={toggleIsOnModal}
+                    cart={cart}
+                    _id={_id}
+                    slidesItemId={slidesItemId}
+                  />
+                </IconButton>
+              )}
+            </CardActions>
+          </Box>
         </CardContent>
-
-        <CardActions className={mainClasses.productActionsBox}>
-          <IconButton
-            className={mainClasses.productCardButtonBasket}
-            aria-label="add to basket"
-            color="primary"
-            variant="contained"
-            onClick={() => {
-              toggleIsOnModal(true);
-            }}
-          >
-            <ShoppingCartOutlinedIcon />
-            <AddToCartModal
-              data={data}
-              discontStart={discontStart}
-              localPrice={localPrice}
-              totalPrice={totalPrice}
-              setTotalPrice={setTotalPrice}
-              isOnModal={isOnModal}
-              toggleIsOnModal={toggleIsOnModal}
-              cart={cart}
-              _id={_id}
-            />
-          </IconButton>
-        </CardActions>
       </Card>
     </Grid>
   );
 };
 
-const ProductCard = ({ product, loading }) =>(
-  <RenderComponent
-    loading={loading}
-    data={product}
-    renderSuccess={ProductCardRender}
-    loadingFallback={Spinner}
-    renderError={<span>Error</span>}
-  />
-);
+const ProductCard = ({ product, loading }) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    product?._id && dispatch(fetchProductComments(product._id));
+  }, []);
+  return (
+    <RenderComponent
+      loading={loading}
+      data={product}
+      renderSuccess={ProductCardRender}
+      loadingFallback={Spinner}
+      renderError={<span>Error</span>}
+    />
+  );
+};
 
 ProductCard.propTypes = {
   product: PropTypes.shape({
     name: PropTypes.string,
     currentPrice: PropTypes.number,
-    imageUrls: PropTypes.array, // !!! MVP: string ---> array
+    imageUrls: PropTypes.array, 
     isProductPage: PropTypes.bool,
     isFiltersPage: PropTypes.bool,
     categories: PropTypes.string,
     quantity: PropTypes.number,
     isBasket: PropTypes.bool,
     discountPrice: PropTypes.number,
-    itemNo: PropTypes.string, // MVP: string ---> number
+    itemNo: PropTypes.string, 
     _id: PropTypes.string,
     cartQuantity: PropTypes.number,
   }),
-  loading: PropTypes.any, // !!! < -----MVP: oneOf(Object.values) ---> any; 
+  loading: PropTypes.any, 
 };
 ProductCardRender.propTypes = {
   data: PropTypes.object,

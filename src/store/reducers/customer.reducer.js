@@ -12,13 +12,17 @@ import {
   UPDATE_CUSTOMER_SUCCESS,
   UPDATE_CUSTOMER_REQUEST,
   CLEAN_UP_LOGIN_STATE,
-  IS_RIGHT_PASSWORD, 
   GET_USERDETAILS_REQUESTED, 
   GET_USERDETAILS_SUCCESS, 
   GET_USERDETAILS_ERROR,
   GET_ORDERS_REQUEST,
   GET_ORDERS_ERROR,
-  GET_ORDERS_SUCCESS
+  GET_ORDERS_SUCCESS,
+  CLEAN_UP_ADD_CUSTOMER_STATE,
+  CLEAN_UP_IS_RIGHT_PASSWORD,
+  IS_RIGHT_PASSWORD_REQUEST,
+  IS_RIGHT_PASSWORD_ERROR,
+  IS_RIGHT_PASSWORD_SUCCESS
 } from "../actions/customer.actions";
 import { downloadRequestStates } from "../../app/constants";
 
@@ -30,7 +34,7 @@ const initialState = {
   updatedCustomer: null,
   getCurrentCustomerRequestState: downloadRequestStates.IDLE,
   updateCustomerRequestState: downloadRequestStates.IDLE,
-  isRightPassword: null,
+  isRightPassword: downloadRequestStates.IDLE,
   isLoggedIn: Boolean(localStorage.getItem('jwt')), 
   getUserDetailsRequestState: downloadRequestStates.IDLE,
   isAdmin: false, 
@@ -56,6 +60,12 @@ const customerReducer = (state = initialState, action) => {
         ...state,
         addRequestState: downloadRequestStates.ERROR,
       };
+    
+    case CLEAN_UP_ADD_CUSTOMER_STATE:
+      return {
+        ...state,
+        addRequestState: downloadRequestStates.IDLE,
+      };
 
     case LOGIN_CUSTOMER_REQUESTED:
       return {
@@ -76,7 +86,6 @@ const customerReducer = (state = initialState, action) => {
         loginRequestState: downloadRequestStates.ERROR,
       };
 
-
     case GET_CUSTOMER_REQUEST:
       return {
         ...state,
@@ -89,22 +98,26 @@ const customerReducer = (state = initialState, action) => {
         getCurrentCustomerRequestState: downloadRequestStates.SUCCESS,
         currentCustomer: action.payload,
       };
+    
     case GET_CUSTOMER_ERROR:
       return {
         ...state,
         getCurrentCustomerRequestState: downloadRequestStates.ERROR,
       };
+    
     case UPDATE_CUSTOMER_REQUEST:
       return {
         ...state,
         updateCustomerRequestState: downloadRequestStates.LOADING,
       };
+    
     case UPDATE_CUSTOMER_SUCCESS:
       return {
         ...state,
         updateCustomerRequestState: downloadRequestStates.SUCCESS,
         updatedCustomer: action.payload,
       };
+    
     case UPDATE_CUSTOMER_ERROR:
       return {
         ...state,
@@ -117,11 +130,29 @@ const customerReducer = (state = initialState, action) => {
         loginRequestState: downloadRequestStates.IDLE,
       };
 
-    case IS_RIGHT_PASSWORD:
+    case IS_RIGHT_PASSWORD_REQUEST:
       return {
         ...state,
-        isRightPassword: action.payload,
+        isRightPassword: downloadRequestStates.LOADING,
       };
+    
+    case IS_RIGHT_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        isRightPassword: downloadRequestStates.SUCCESS,
+      };
+    
+    case IS_RIGHT_PASSWORD_ERROR:
+      return {
+        ...state,
+        isRightPassword: downloadRequestStates.ERROR,
+      };
+    
+    case CLEAN_UP_IS_RIGHT_PASSWORD:
+      return {
+        ...state,
+        isRightPassword: downloadRequestStates.IDLE,
+      };    
 
     case GET_USERDETAILS_REQUESTED:
       return {

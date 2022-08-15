@@ -1,4 +1,4 @@
-import { Container, Grid, Box, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import PropTypes from "prop-types"; 
 
 import { PRODUCTS_NUMBER_ON_MAIN_PAGE } from "../../../app/constants"; 
@@ -15,9 +15,9 @@ const ProductsListSection = ({ data, loading, isLoading, productsNumber }) => {
 
   return (
     <>
-      <Container fixed={true} sx={{ marginTop: "30px", marginBottom: "89px" }}>
+      <Box sx={{ marginTop: "30px", marginBottom: "89px" }}>
         <Grid
-          container
+          container={true}
           rowSpacing={{ xs: 1, sm: 2, md: 3 }}
           columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         >
@@ -44,7 +44,7 @@ const ProductsListSection = ({ data, loading, isLoading, productsNumber }) => {
             </Box>
           )}
         </Grid>
-      </Container>
+      </Box>
     </>
   );
 };

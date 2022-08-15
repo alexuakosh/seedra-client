@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Grid, Typography, IconButton, Container } from "@mui/material";
 import Textfield from "./Components/FormsUI/Textfield";
@@ -12,28 +11,45 @@ import {
   updateCustomer,
 } from "../../../store/thunks/customer.thunks";
 import { currentCustomerSelector, isRightPasswordSelector } from "../../../store/selectors/selectors";
+import ErrorHandler from "../ErrorHandler/ErrorHandler.jsx";
+import { cleanUpIsRightPassword } from "../../../store/actions/customer.actions";
 
-function PersonalInfo() {
+function PersonalInfo() { 
+
   const currentCustomer = useSelector(currentCustomerSelector);
-  const isRightPassword = useSelector(isRightPasswordSelector);
-  const dispatch = useDispatch();
-  const navigation = useNavigate();
-  const handleSubmit = (values) => {
-    dispatch(updateCustomer(values));
-    navigation("/settings");
-  };
+  const rightPassword = useSelector(isRightPasswordSelector);
+  
+  const dispatch = useDispatch(); 
+
   const [open, setOpen] = useState(false);
   const reopen = () => {
     setOpen(!open);
   };
-
-  console.log(currentCustomer);
-  console.log(isRightPassword);
-
+  const [password, setPassword] = useState(true)
+  
   useEffect(() => {
     dispatch(getCustomer());
   }, []);
 
+  useEffect(() => { 
+    if (rightPassword === 'error') {
+      setPassword(false);
+    } 
+  }, [rightPassword])
+
+  useEffect(() => {
+    if (password === false && rightPassword === 'error') {
+      dispatch(cleanUpIsRightPassword());
+    }
+  }, [password])
+  
+  const handleSubmit = (values) => {
+    dispatch(updateCustomer(values));
+    if (password === false && rightPassword === 'idle') {
+      setPassword(!open);
+    }
+  };
+  
 
   const INITIAL_FORM_STATE = {
     firstName: currentCustomer?.firstName,
@@ -74,9 +90,13 @@ function PersonalInfo() {
     house: Yup.number().integer().typeError("Please enter the correct number"),
     city: Yup.string(),
     password: Yup.string()
-      .min(8, "Password is 8 chars minimum.")
+      .min(7, "Password is 7 chars minimum.")
+      .max(30, "30 is max chars.")
       .matches(/[a-zA-Z]/, "Password can only contain Latin letters."),
-    // newPassword: Yup.string().oneOf([Yup.ref("password")]),
+    newPassword: Yup.string()
+      .min(7, "Password is 7 chars minimum.")
+      .matches(/[a-zA-Z]/, "Password can only contain Latin letters.")
+      .max(30, "30 is max chars."),
   });
 
   return (
@@ -161,13 +181,6 @@ function PersonalInfo() {
                     type="password"
                   />
                 </Grid>
-                {/* <Grid item xs={12}>
-                              <Textfield
-                              name="passwordConfirm"
-                              label="Confirm new password*"
-                              type='password'
-                              />
-                      </Grid>  */}
                 <Grid sx={{ mb: 3, mt: 2 }} item xs={12}>
                   <Grid sx={{ mb: 3 }} item xs={12}>
                     <ButtonWrapper onClick={handleSubmit}>
@@ -180,6 +193,7 @@ function PersonalInfo() {
           </Formik>
         )}
       </Container>
+      {password ? false : <ErrorHandler  errorMessage={"Incorrect Current password."}/>}
     </Grid>
   );
 }

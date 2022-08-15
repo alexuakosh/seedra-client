@@ -11,7 +11,7 @@ export const useProductPageStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection:"column",
     justifyContent: "space-between",
-    width: "100%"
+    width: "100%",
   },
   productCardMediaWrapper: {
     maxWidth: "445px",
@@ -24,6 +24,7 @@ export const useProductPageStyles = makeStyles((theme) => ({
     borderRadius: "12px",
   },
   productCardContent: {
+    marginTop: '50px', 
   },
   productCardName: {
     fontSize: "24px",
@@ -50,6 +51,7 @@ export const useProductPageStyles = makeStyles((theme) => ({
   productCardPrice: {
     fontWeight: "bold",
     fontSize:"28px",
+    marginLeft: '2px', 
   },
   productAmountInput: {
     alignSelf:"center",
@@ -59,23 +61,30 @@ export const useProductPageStyles = makeStyles((theme) => ({
     fontSize: "16px",
   },
   amountInputGroup: {
-    margin:"16px",
+    margin:"16px 30px 16px 16px",
     height: "44px",
     border: "1px solid rgba(239, 239, 239, 1)",
     borderRadius: "11px",
   },
-  buttonIcon: {
-    marginRight:"12px"
+  chipLabel: {
+    width: '130px', 
+    marginRight: '8px', 
+    '@media (max-width: 900px)': {
+      marginRight: '4px',
   },
+  }, 
   productCardButtonBasket: {
-    margin:"16px",
-    textTransform: "capitalize"
+    margin:"16px 27px 16px 16px",
+    textTransform: "capitalize",
+    color: "primary",
   },
+ 
   customScrollbar: {
     display:"flex",
     width:"100%",
     justifyContent:"space-between",
-    alignItems:"center"
+    alignItems:"center",  
+    marginLeft:"15px", 
   },
   productCardActionBtns: {
     display:"flex",
@@ -94,5 +103,5 @@ export const useProductPageStyles = makeStyles((theme) => ({
     width: "100%",
     textAlign:"left",
     marginBottom:"56px"
-  }
+  },
 }));

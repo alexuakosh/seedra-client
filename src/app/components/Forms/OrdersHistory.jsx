@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Link } from "react-router-dom";
 import { Typography, Container, Grid } from "@mui/material";
-// import { makeStyles } from "@mui/styles";
+
 import { useDispatch, useSelector } from "react-redux"
 import { customerOrdersHistory } from "../../../store/selectors/selectors"
 import { getOrders } from "../../../store/thunks/customer.thunks"
@@ -12,7 +12,6 @@ import Preloader from "../../../ui/components/Preloader/Preloader.jsx"
 export default function OrdersHistory() {
     const dispatch = useDispatch()
     const ordersList = useSelector(customerOrdersHistory)
-    console.log(ordersList);
 
     const getCustomerOrders = orders => {
         dispatch(getOrders(orders))      
@@ -49,15 +48,23 @@ export default function OrdersHistory() {
                         <img style={{float:"left",paddingRight:10}} align="top" width={70} src={product.product?.imageUrls[0]} alt="/" />
                       </Link>
                     </Grid> 
-                    <Grid item style={{ display:'inline-block'}}>{(product.product.name).slice(0, 60)}...</Grid>
+                    <Grid item style={{ display:'inline-block'}}>{(product.product.name).slice(0, 35)}...</Grid>
                     <Grid item style={{ display:'inline-block'}}>Quantity: {product.product.quantity}</Grid>
                     <Grid item style={{ display:'inline-block'}}>Price: {product.product.currentPrice}$</Grid>                
                   </Grid>
                 </Typography>
             )}
-            <Typography style={{paddingTop:15}}  subtitle2={'h2'}>Total: {order?.totalSum}$</Typography>
+             <Typography style={{ padding: '10px 20px'}} variant="h6">
+                <Grid  container alignItems="center" justifyContent="space-between" direction='row'>           
+                  <Grid item style={{ display:'inline-block'}}>
+                   {order?.status}
+                  </Grid>
+                  <Grid item style={{ display:'inline-block'}}>
+                    Total: {order?.totalSum}$
+                  </Grid>               
+                </Grid>
+              </Typography>
           </Grid>
-
           )}
       </Grid>
     )

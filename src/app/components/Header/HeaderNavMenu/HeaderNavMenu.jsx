@@ -1,11 +1,8 @@
 import PropTypes from "prop-types";
-// import { Box, MenuList } from "@mui/material";
-// import MenuItemNoChildrenDesktop from "./NavMenuComponents/MenuItemNoChildrenDesktop.jsx";
-// import MenuItemWithChildrenDesctop from "./NavMenuComponents/MenuItemWithChildrenDesctop.jsx";
 import MenuDesktop from './NavMenuComponents/MenuDesktop/MenuDesktop.jsx';
 import MenuTable from './NavMenuComponents/MenuTable/MenuTable.jsx';
 import MenuMobile from './NavMenuComponents/MenuMobile/MenuMobile.jsx';
-// import classes from "./HeaderNavMenuStyles.jsx";
+
 
 export default function HeaderNavMenu({
   parentsListWithoutChildren,
@@ -13,15 +10,16 @@ export default function HeaderNavMenu({
   resolution,
   login, 
   admin, 
+  onClose, 
 }) {
-  // ------------------------------- RENDER -----------------------------
+  
   switch(resolution) {
   case 'desktop': 
    return (
     <MenuDesktop pressetsNoChildren={parentsListWithoutChildren} pressetsWithChildren={parentsListWithChildren}/>
   );
   case 'mobile':
-      return(<MenuMobile pressetsNoChildren={parentsListWithoutChildren} pressetsWithChildren={parentsListWithChildren}  isLogin={login} isAdmin={admin} />);
+      return(<MenuMobile pressetsNoChildren={parentsListWithoutChildren} pressetsWithChildren={parentsListWithChildren}  isLogin={login} isAdmin={admin} onClose={onClose}/>);
   case 'table':
     return (<MenuTable pressetsNoChildren={parentsListWithoutChildren} pressetsWithChildren={parentsListWithChildren} isAdmin={admin}></MenuTable>)
    default:
@@ -29,7 +27,7 @@ export default function HeaderNavMenu({
    }
 }
 
-// ====================================================================================
+
 HeaderNavMenu.defaultProps = {
   resolution: "desktop",
 };
@@ -40,4 +38,5 @@ HeaderNavMenu.propTypes = {
   parentsListWithoutChildren: PropTypes.array,
   login: PropTypes.bool,
   admin: PropTypes.bool, 
+  onClose: PropTypes.func, 
 };

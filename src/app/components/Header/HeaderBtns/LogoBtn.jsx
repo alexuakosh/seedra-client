@@ -2,9 +2,8 @@ import { Link as RouterLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import Box from '@mui/material/Box';
 import Icon from "../../../../ui/components/Icon/Icon.jsx";
-// =============================================================
 
-// Styles:
+
 const styles = {
   Icon: {
     width: "98px",
@@ -13,9 +12,8 @@ const styles = {
   },
   IconBox: {},
 };
-// -------------------------------------------------------------
 
-// Component:
+
 export default function LogoBtn({ linkPath, ...restProps }) {
   return (
     <Box sx={styles.IconBox} {...restProps}>
@@ -25,7 +23,8 @@ export default function LogoBtn({ linkPath, ...restProps }) {
     </Box>
   );
 }
-// =============================================================
+
+
 LogoBtn.defaultProps = {
   linkPath: "/",
 };

@@ -67,3 +67,19 @@ export const UPLOAD_PRODUCT_RATING_ERROR = "UPLOAD_PRODUCT_RATING_ERROR";
 export const uploadProductRatingError = () => ({
   type: UPLOAD_PRODUCT_RATING_ERROR,
 });
+
+export const DOWNLOAD_PRODUCT_BY_ID_REQUESTED = "DOWNLOAD_PRODUCT_BY_ID_REQUESTED";
+export const downloadProductByIdRequested = () => ({
+  type: DOWNLOAD_PRODUCT_BY_ID_REQUESTED,
+});
+
+export const  DOWNLOAD_PRODUCT_BY_ID_SUCCESS = "DOWNLOAD_PRODUCT_BY_ID_SUCCESS";
+export const downloadProductByIdSuccess = (product) => ({
+  type: DOWNLOAD_PRODUCT_BY_ID_SUCCESS,
+  payload: product,
+});
+
+export const DOWNLOAD_PRODUCT_BY_ID_ERROR = "DOWNLOAD_PRODUCT_BY_ID_ERROR";
+export const downloadProductByIdError = () => ({
+  type: DOWNLOAD_PRODUCT_BY_ID_ERROR,
+});

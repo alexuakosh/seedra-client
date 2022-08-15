@@ -12,14 +12,19 @@ import {
   UPLOAD_PRODUCT_RATING_REQUESTED,
   UPLOAD_PRODUCT_RATING_SUCCESS,
   UPLOAD_PRODUCT_RATING_ERROR,
+  DOWNLOAD_PRODUCT_BY_ID_REQUESTED,
+  DOWNLOAD_PRODUCT_BY_ID_SUCCESS,
+  DOWNLOAD_PRODUCT_BY_ID_ERROR,
 } from "../actions/products.actions";
 import { downloadRequestStates } from "../../app/constants";
 
 const initialState = {
   downloadAllRequestState: downloadRequestStates.IDLE,
+  downloadProductRequestState: downloadRequestStates.IDLE,
   downloadFilteredRequestState: downloadRequestStates.IDLE,
   addProductRequestState: downloadRequestStates.IDLE,
   productList: [],
+  product: {},
   selectedCategories: "all",
   filteredProducts: [],
 };
@@ -104,13 +109,32 @@ const productsReducer = (state = initialState, action) => {
             (product) => product.itemNo !== action.payload.data.itemNo
           ),
           action.payload.data,
-        ] /* MVP - added state.product */,
+        ],
       };
 
     case UPLOAD_PRODUCT_RATING_ERROR:
       return {
         ...state,
         uploadRatingRequestState: downloadRequestStates.ERROR,
+      };
+
+    case DOWNLOAD_PRODUCT_BY_ID_REQUESTED:
+      return {
+        ...state,
+        downloadProductRequestState: downloadRequestStates.LOADING,
+      };
+
+    case DOWNLOAD_PRODUCT_BY_ID_SUCCESS:
+      return {
+        ...state,
+        product: action.payload.data,
+        downloadProductRequestState: downloadRequestStates.SUCCESS,
+      };
+
+    case DOWNLOAD_PRODUCT_BY_ID_ERROR:
+      return {
+        ...state,
+        downloadProductRequestState: downloadRequestStates.ERROR,
       };
 
     default:

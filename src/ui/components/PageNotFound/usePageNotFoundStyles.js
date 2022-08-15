@@ -4,7 +4,6 @@ export const usePageNotFoundStyles = makeStyles(() => ({
   container404: {
     display: "flex",
     padding: "30px",
-    // height: "20vh",
     borderRadius: "20px",
     flexDirection: "row",
     backgroundColor: "#eaf1eb"

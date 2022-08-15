@@ -20,8 +20,7 @@ const CheckoutSummary = (formData) => {
       <Typography
         paddingBottom="40px"
         textAlign="center"
-        variant="h2"
-        component="h3"
+        sx={{ typography: { sm: 'h2', xs: 'h5' } }} 
       >
         Check your data
       </Typography>
@@ -53,10 +52,6 @@ const CheckoutSummary = (formData) => {
         <Box className={classes.box}>
           <Typography className={classes.fieldName}>SHIPPING METHOD: </Typography>
           <Typography>{formData.formField.deliveryMethod}</Typography>
-        </Box>
-        <Box className={classes.box}>
-          <Typography className={`${classes.fieldName} ${classes.sum}`}>TOTAL SUM: </Typography>
-          <Typography></Typography>
         </Box>
       </Container>
     </>

@@ -4,7 +4,7 @@ import InputField from "../CheckoutFormFields/InputField.jsx";
 const ExpressDelivery = () => 
  (
       <Grid>
-        <Typography variant="h3" component="h3">
+        <Typography sx={{ typography: { sm: 'h3', xs: 'h6' } }}>
           Delivery info
         </Typography>
         <Grid container spacing={2}>

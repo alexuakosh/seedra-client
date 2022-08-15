@@ -1,32 +1,23 @@
-// Libraries Components:
-// import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-// MUI Components:
+
 import { Box, Paper, MenuList, Grid } from "@mui/material";
-// !!!------------------------------------------
-import { makeStyles } from "@material-ui/core"; // !!! <-------------- MUI CORE
-// !!!------------------------------------------
-// React Components:
+import { makeStyles } from "@mui/styles";
 import SearchAppBar from "../../../HeaderSearch/SearchAppBar.jsx";
-// -----------------------
-// Auth:
 import Auth from "../../../../Forms/Auth.jsx";
 import ProfileMenu from "../../../ProfileMenu.jsx";
 import ProfileMenuAdmin from "../../../ProfileMenuAdmin.jsx";
-//------------------------
+
 import MenuItemNoChildrenMobile from "./MenuMobileComponents/MenuItemNoChildrenMobile.jsx";
 import MenuItemWithChildrenMobile from "./MenuMobileComponents/MenuItemWithChildrenMobile.jsx";
-// Selectors: 
-// import { loginStateSelector } from "../../../../../../store/selectors/selectors";
-// ======================================================================
+
 export default function MenuMobile({
   pressetsNoChildren,
   pressetsWithChildren,
   isLogin, 
   isAdmin, 
+  onClose, 
 }) {
-  // --------------------------------------------------------------------
-  // Styles:
+  
   const useStyles = makeStyles((theme) => ({
     DropDownMenu: {
       width: "60%",
@@ -35,8 +26,7 @@ export default function MenuMobile({
       },
     },
   }));
-  // let loginStatus = useSelector(loginStateSelector);
-  // =================================== Render ==================================
+  
   const classes = useStyles();
   return (
     <Box
@@ -56,17 +46,14 @@ export default function MenuMobile({
       >
         <Grid sx={{ flexGrow: 1 }}>
           <Grid container sx={{ flexGrow: 1, ml: 2 }} item xs={10} alignItems='center' justifyContent='space-between'>
-          {/* {isLogin ? 'space-between' : "flex-end"} */}
             <Grid item xs={2}>{isLogin && (isAdmin ? < ProfileMenuAdmin /> : <ProfileMenu />)}</Grid>
             <Grid item xs={8} alignItems='center' >
-              <SearchAppBar />
+              <SearchAppBar onClose={onClose}/>
             </Grid>
           </Grid>
           <Grid item xs={12}>
             <MenuList>
-              <MenuItemNoChildrenMobile arrOfOptions={pressetsNoChildren} />
-
-              {/* {cardsList} */}
+              <MenuItemNoChildrenMobile arrOfOptions={pressetsNoChildren} onClose={onClose} />
               <MenuItemWithChildrenMobile arrOfOptions={pressetsWithChildren} />
             </MenuList>
           </Grid>
@@ -86,4 +73,5 @@ MenuMobile.propTypes = {
   pressetsWithChildren: PropTypes.array,
   isLogin: PropTypes.bool,
   isAdmin: PropTypes.bool, 
+  onClose: PropTypes.func, 
 };

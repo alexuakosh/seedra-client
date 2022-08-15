@@ -10,12 +10,6 @@ export const setQueryParams = (queryParams) => ({
   payload: queryParams,
 });
 
-export const SORT_PRODUCTS_BY_PRICE = "SORT_PRODUCTS_BY_PRICE";
-export const sortProductsByPrice = (request) => ({
-  type: SORT_PRODUCTS_BY_PRICE,
-  payload: request,
-});
-
 export const  SET_SELECTED_CATEGORY = "SET_SELECTED_CATEGORY";
 export const setSelectedCategory = (category) => ({
   type: SET_SELECTED_CATEGORY,
@@ -63,5 +57,3 @@ export const setProductsQuantity = (productsQuantity) => ({
   type: SET_PRODUCTS_QUANTITY,
   payload: productsQuantity,
 });
-
-

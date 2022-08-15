@@ -27,7 +27,7 @@ export const useFiltersStyles = makeStyles(() => ({
   },
   productCardContent: {
     margin: "10px 28px",
-    padding: "0",
+    padding: "0px",
   },
   productCardName: {
     margin: "0px",
@@ -41,13 +41,24 @@ export const useFiltersStyles = makeStyles(() => ({
   },
   productCardButtonBasket: {
     position: "absolute !important",
-    bottom: "28px",
+    bottom: "33px",
     right: "15px",
     borderRadius: "8px",
     width: "48px",
     height: "48px",
     border: "1px solid #EFEFEF",
     padding: "0px important",
+  },
+
+  productCardButtonBurger: {
+    position: "absolute !important",
+    bottom: "33px",
+    right: "15px",
+    borderRadius: "8px",
+    width: "24px",
+    height: "24px",
+    border: "1px solid #EFEFEF",
+    padding: "11px"
   },
   productCardButtons: {
     display: "flex",

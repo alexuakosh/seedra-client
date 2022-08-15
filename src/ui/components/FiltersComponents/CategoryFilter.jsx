@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Stack, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -10,6 +10,7 @@ import {
   mainCategoriesSelector,
 } from "../../../store/selectors/selectors";
 import { setSelectedCategory } from "../../../store/actions/filters.actions";
+import fetchCategories from "../../../store/thunks/catalog.thunks";
 
 const CategoryFilter = () => {
   const classes = useFiltersStyles();
@@ -23,6 +24,10 @@ const CategoryFilter = () => {
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(null);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, []);
 
   const categoriesList = categories.map(({ name }) => name);
   const process = (arr) => {
@@ -98,7 +103,7 @@ const CategoryFilter = () => {
       </Container>
 
       <Stack className={isOpenCategoriesFilter}>
-        {parentsListWithoutChildren.map((category) => (
+        {parentsListWithoutChildren?.map((category) => (
           <Container key={category}>
             <Container className={classes.categoriesContainer}>
               <Typography

@@ -31,7 +31,6 @@ const ShippingNovaPoshta = () => {
       data: settings,
       redirect: "follow",
     };
-
     axios(config).then((response) => func(response));
   };
 
@@ -49,6 +48,11 @@ const ShippingNovaPoshta = () => {
   };
 
   const handlerCity = (param) => {
+    setPostOfficeCity({
+      data: {
+        data: [{ Description: "Loading..." }],
+      },
+    });
     const settings = {
       apiKey: novaPoshtaApiKey,
       modelName: "Address",
@@ -66,15 +70,17 @@ const ShippingNovaPoshta = () => {
       <Typography marginBottom={"10px"}>Post Office Info</Typography>
       <Grid container justifyContent="space-around" direction="column">
         <Autocomplete
-          onChange={(e, value) => (
-            setFieldValue("postOfficeCity", value.Description)
-          )}
+          onChange={(e, value) => {
+            if (value.Description !== null) {
+              setFieldValue("postOfficeCity", value.Description)
+            }
+          }}
           options={cityes.data.data}
           autoHighlight
           getOptionLabel={(option) => option.Description}
           isOptionEqualToValue={(option) => option.Description}
           renderOption={(props, option) => (
-            <Box key={option.Description} component="li" {...props}>
+            <Box key={option.Ref} component="li" {...props}>
               {option.Description}
             </Box>
           )}
@@ -96,7 +102,8 @@ const ShippingNovaPoshta = () => {
         <Autocomplete
           name="postOfficeWarehouse"
           onChange={(e, value) => {
-            setFieldValue("postOfficeWarehouse", value.Description);
+            if (value.Description !== null)
+             {setFieldValue("postOfficeWarehouse", value.Description);}           
           }}
           sx={{ marginTop: "15px" }}
           options={postOffice.data.data}
@@ -104,7 +111,7 @@ const ShippingNovaPoshta = () => {
           getOptionLabel={(option) => option.Description}
           isOptionEqualToValue={(option) => option.Description}
           renderOption={(props, option) => (
-            <Box key={option.Description} component="li" {...props}>
+            <Box key={option.Ref} component="li" {...props}>
               {option.Description}
             </Box>
           )}

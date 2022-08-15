@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { API } from "../../app/constants";
 import { setProductsQuantity } from "../actions/filters.actions";
 import {
@@ -15,6 +16,9 @@ import {
   uploadProductRatingRequested,
   uploadProductRatingError,
   uploadProductRatingSuccess,
+  downloadProductByIdSuccess,
+  downloadProductByIdRequested,
+  downloadProductByIdError,
 } from "../actions/products.actions";
 
 const fetchProducts =
@@ -29,9 +33,10 @@ const fetchProducts =
         dispatch(downloadFilteredProductsSuccess(products.data.products));
         return products;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(downloadAllProductsError());
         dispatch(downloadFilteredProductsError());
+        Sentry.captureException(err);
       });
   };
 
@@ -50,8 +55,9 @@ const fetchFilteredProducts = (queryParams) => (dispatch) => {
 
       return filteredProducts;
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(downloadFilteredProductsError());
+      Sentry.captureException(err);
     });
 };
 
@@ -68,8 +74,9 @@ const addProduct = (product) => (dispatch) => {
       dispatch(addProductSuccess(addedProduct));
       return addedProduct;
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(addProductError());
+      Sentry.captureException(err);
     });
 };
 
@@ -83,13 +90,29 @@ const rateProduct = (id, updatedProduct) => (dispatch) => {
       dispatch(uploadProductRatingSuccess(product));
       return product;
     })
-    .catch(() => {
+    .catch((err) => {
       dispatch(uploadProductRatingError());
+      Sentry.captureException(err);
     });
 };
 
 const filterProductsByCategory = (category) => (dispatch) => {
   dispatch(filterByCategory(category));
+};
+
+const fetchProductById = (id) => (dispatch) => {
+  dispatch(downloadProductByIdRequested());
+
+  axios
+    .get(`${API}products/${id}`)
+    .then((product) => {
+      dispatch(downloadProductByIdSuccess(product));
+      return product;
+    })
+    .catch((err) => {
+      dispatch(downloadProductByIdError());
+      Sentry.captureException(err);
+    });
 };
 
 export {
@@ -98,4 +121,5 @@ export {
   fetchFilteredProducts,
   addProduct,
   rateProduct,
+  fetchProductById,
 };

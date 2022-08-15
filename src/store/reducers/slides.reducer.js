@@ -8,6 +8,7 @@ import { downloadRequestStates } from "../../app/constants";
 const initialState = {
   downloadRequestState: downloadRequestStates.IDLE,
   slideList: [],
+  slidesItemId: [],
 };
 
 const slidesReducer = (state = initialState, action) => {
@@ -22,7 +23,8 @@ const slidesReducer = (state = initialState, action) => {
       return {
         ...state,
         downloadRequestState: downloadRequestStates.SUCCESS,
-        slideList: action.payload.data,
+        slideList: action.payload.products.data,
+        slidesItemId: action.payload.slidesItemId,
       };
 
     case DOWNLOAD_ALL_SLIDES_ERROR:

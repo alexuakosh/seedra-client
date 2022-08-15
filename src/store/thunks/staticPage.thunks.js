@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import {
   receivedHtmlStaticPage,
   requestedHtmlStaticPage,
@@ -18,5 +19,6 @@ export const fetchStaticPage = (page) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(receivedFailureHtmlStaticPage(err.message));
+      Sentry.captureException(err);
     });
 };

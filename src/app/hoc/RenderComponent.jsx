@@ -3,8 +3,7 @@ export default function RenderComponent({
   data = [],
   renderSuccess,
   loadingFallback = <p>Loading...</p>,
-  renderError = error => (
-    <pre>{JSON.stringify(error, null, 2)}</pre>)
+  renderError = (error) => <pre>{JSON.stringify(error, null, 2)}</pre>,
 }) {
   switch (loading) {
     case "idle":
@@ -16,5 +15,4 @@ export default function RenderComponent({
     default:
       return renderSuccess({ data });
   }
-
 }

@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { Box, Typography, Divider, Container, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useSelector, useDispatch } from "react-redux";
-import OrderSummary from "./OrderSummary.jsx";
-import CartList from "./CartList.jsx";
+import OrderSummary from "../../components/Cart/OrderSummary.jsx";
+import CartList from "../../components/Cart/CartList.jsx";
 import {
   countTotalAmountOrder,
   fetchCart,
 } from "../../../store/thunks/cart.thunks";
 import Preloader from "../../../ui/components/Preloader/Preloader.jsx";
-import MobileCartList from "./MobileCartList.jsx";
+import MobileCartList from "../../components/Cart/MobileCartList.jsx";
 
 const useStyles = makeStyles((theme) => ({
   yourCartHeading: {

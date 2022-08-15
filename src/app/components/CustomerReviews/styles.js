@@ -3,12 +3,24 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles((theme) => ({
   customerReviewsContainer: {
     ...theme.mixins.wrapper,
-    paddingTop: "60px",
+    paddingTop: "10px",
     paddingBottom: "60px",
+    '@media (max-width: 415px)': {
+      width: 300, 
+      display: "flex",
+      flexFlow: 'column',
+      justifyContent: "center",
+      alignItems: "center",
+    },
   },
   reviewsHeading: {
     fontWeight: "bold",
     color: theme.palette.common.black,
+    marginLeft: '8px',
+    marginBottom:"56px",
+    '@media (max-width: 415px)': {
+      marginLeft: '21px', 
+    },
   },
   reviewsRaitingContainer: {
     borderColor: theme.palette.common.white,

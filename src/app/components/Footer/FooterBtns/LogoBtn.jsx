@@ -3,9 +3,8 @@ import { useEffect } from "react";
 import PropTypes from "prop-types";
 import Box from '@mui/material/Box';
 import Icon from "../../../../ui/components/Icon/Icon.jsx";
-// =============================================================
 
-// Styles:
+
 const styles = {
   Icon: {
     width: "98px",
@@ -14,9 +13,9 @@ const styles = {
   },
   IconBox: {},
 };
-// -------------------------------------------------------------
 
-// Component:
+
+
 export default function LogoBtn({ linkPath, ...restProps }) {
   useEffect(() => {
 
@@ -29,7 +28,8 @@ export default function LogoBtn({ linkPath, ...restProps }) {
     </Box>
   );
 }
-// =============================================================
+
+
 LogoBtn.defaultProps = {
   linkPath: "/",
 };

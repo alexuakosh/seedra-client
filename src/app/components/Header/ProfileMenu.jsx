@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState } from "react"; 
+import PropTypes from 'prop-types';
 
 import { IconButton, Divider, ListItemIcon, MenuItem, Menu, Avatar } from "@mui/material";
 import { AccountCircle, Settings, Logout, Favorite, History } from "@mui/icons-material";
@@ -8,7 +9,7 @@ import { Link } from "react-router-dom";
 
 
 
-export default function ProfileMenu () {
+export default function ProfileMenu ({ onClose }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const logout = () => {
         localStorage.removeItem('jwt')
@@ -63,7 +64,7 @@ export default function ProfileMenu () {
                 height: 10,
                 bgcolor: 'background.paper',
                 transform: 'translateY(-50%) rotate(45deg)',
-                zIndex: 0,
+                zIndex: '150',
                 },
             },
             }}
@@ -74,7 +75,7 @@ export default function ProfileMenu () {
                 <Avatar/> Profile
             </MenuItem>
             <Divider />
-            <Link style={{ textDecoration: 'none', color: "black" }} to="/wishlist">
+            <Link style={{ textDecoration: 'none', color: "black" }} to="/wishlist" onClick={() => onClose()}>
                 <MenuItem >
                     <ListItemIcon>
                         <Favorite fontSize="small" />                    
@@ -82,7 +83,7 @@ export default function ProfileMenu () {
                 </MenuItem>
             </Link> 
 
-            <Link style={{ textDecoration: 'none',color: "black" }} to="/history"> 
+            <Link style={{ textDecoration: 'none',color: "black" }} to="/history" onClick={() => onClose()}> 
                 <MenuItem >
                     <ListItemIcon>
                         <History fontSize="small" />
@@ -90,7 +91,7 @@ export default function ProfileMenu () {
                 </MenuItem>    
             </Link> 
                   
-            <Link style={{ textDecoration: 'none', color: "black" }}  to="/settings">
+            <Link style={{ textDecoration: 'none', color: "black" }}  to="/settings" onClick={() => onClose()}>
                 <MenuItem >
                     <ListItemIcon>
                         <Settings fontSize="small" />
@@ -108,3 +109,7 @@ export default function ProfileMenu () {
       </>
     )
 }
+
+ProfileMenu.propTypes = {
+    onClose: PropTypes.func, 
+};

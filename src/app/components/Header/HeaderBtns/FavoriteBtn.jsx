@@ -2,9 +2,8 @@ import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { Badge, Box } from "@mui/material";
-// ===================================================================================
 
-// Styles:
+
 const styles = {
   FavoriteBtn: {
     Container: {
@@ -21,8 +20,8 @@ const styles = {
   },
 };
 
-// -----------------------------------------------------------------------------------
-// Component:
+
+
 export default function FavoriteBtn({ quantity, linkPath, ...restProps }) {
   return (
     <Box sx={styles.FavoriteBtn.Container} {...restProps}>
@@ -34,7 +33,7 @@ export default function FavoriteBtn({ quantity, linkPath, ...restProps }) {
     </Box>
   );
 }
-// ===================================================================================
+
 
 FavoriteBtn.defaultProps = {
   quantity: 0,

@@ -1,18 +1,16 @@
-// Libraries Components:
 import PropTypes from "prop-types";
 import { useState } from "react";
-// MUI Components:
+
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Paper, MenuItem, Link, Button, Menu } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-// ========================================================================
+
 
 export default function MenuItemWithChildrenTable({ arrOfOptions }) {
   const [dropDownOpen, setDropDownOpen] = useState(null);
-  //
-  // Open option function:
+  
   const showDropdown = (e) => {
     const { id } = e.target;
     return setDropDownOpen((prevState) => (id !== prevState && id) || null);
@@ -26,7 +24,7 @@ export default function MenuItemWithChildrenTable({ arrOfOptions }) {
     setAnchorEl(null);
   };
   const handleClickAway = () => setDropDownOpen(null);
-  // =================================== Render =======================
+  
   return (
     <Box>
       <Button
@@ -171,7 +169,7 @@ export default function MenuItemWithChildrenTable({ arrOfOptions }) {
   );
 }
 
-// ================================================================
+
 MenuItemWithChildrenTable.defaultProps = {
   arrOfOptions: [
     { parentId: "option1", name: ["subOption1-1", "subOption1-2"] },

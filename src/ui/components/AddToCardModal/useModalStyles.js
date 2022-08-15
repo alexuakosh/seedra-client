@@ -57,5 +57,12 @@ export const useModalStyles = makeStyles((theme) => ({
   },
   productCardButtons: {
     display:"flex",
+  }, 
+  chipLabel: {
+    width: '130px', 
+    marginRight: '8px', 
+    '@media (max-width: 900px)': {
+      marginRight: '4px',
+  },
   }
 }));

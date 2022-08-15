@@ -1,237 +1,225 @@
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { styled, alpha } from "@mui/material/styles";
-import InputBase from "@mui/material/InputBase";
+import { useState, useEffect, useRef } from "react";
+import { IconButton } from "@mui/material";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import SearchResultContainer from "./SearchComponent/SearchResultsContainer.jsx";
-import Spinner from "../../../../ui/components/Spinner/Spinner.jsx";
-// import SearchBtn from './SearchBtns/SearchBtn.jsx';
-// =========================================================
-// import searchDB from "./SearchComponent/SearchLogic/searchDB";
-import searchObserver from "./SearchComponent/SearchLogic/searchObserver";
-// import searchNormalize from "./SearchComponent/SearchLogic/searchNormalize";
+import SearchResultContainer from "./SearchComponents/SearchResultsContainer.jsx";
+import SearchIconWrapper from "./SearchComponents/StyledComponents/SearchIconWrapper";
+import StyledInputBase from "./SearchComponents/StyledComponents/StyledInputBase";
+import Search from "./SearchComponents/StyledComponents/Search";
 import { API } from "../../../constants/index";
-
-// =========================================================
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: theme.palette.success,
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "15ch",
-      // "&:focus": {
-      //   width: "20ch",
-      // },
-    },
-  },
-}));
-
+import {
+  formatUserText,
+  fetchSearchKeys,
+  fetchProducts,
+  createArrOfIDs,
+} from "./SearchComponents/SearchHelper";
+// ==========================================================================
 export default function SearchAppBar() {
-  // -----------------------------------------------------------------------------------
-  // Pressets:
+  const searchInput = useRef();
   const [inputText, setInputText] = useState("");
-  const [trigger, setTrigger] = useState(false); // Start searching
+  const [prevInputText, setPrevInputText] = useState("");
+  const [formatedInputText, setFormatedInputText] = useState("");
+  const [downloadState, setDownloadState] = useState("idle");
+  const [searchKeys, setSearchKeys] = useState([{}]);
   const [arrIDs, setIDsArr] = useState([]);
   const [products, setProducts] = useState([]);
-  const [fetchedProducts, setFetchedProducts] = useState([]); // Array of products
-  const [loading, setLoading] = useState(false); // Request status
-  const [activeSearchContainer, setActiveSearchContainer] = useState(false); // Render container
-  const [ready, setReady] = useState(false);
+  const [activeSearchContainer, setActiveSearchContainer] = useState(false);
+  const [searchStatus, setSearchStatus] = useState(false);
+  const [enterPressed, setEnterPressed] = useState(false);
 
-  // -----------------------------------------------------------------------------------
-  // Functions:
-  // ++++++
-  // Input controller:
-  const inputHandler = (event) => {
+  // Pressets:
+  const init = {
+    searchDelay: 700,
+    searchKeysEndPoint: undefined,
+    searchInputID: "search-input",
+    timerID: null,
+    typedMoreOrEqualThen: (n) => {
+      const regEx = new RegExp(`^.{${n},}`, "gi");
+      return { in: (str) => regEx.test(str) };
+    },
+    API,
+  };
+
+  const fetchProductsBy = fetchProducts.bind(
+    null,
+    arrIDs,
+    setDownloadState,
+    init.API,
+    "products"
+  );
+  const createArrOfProductsIDs = createArrOfIDs.bind(null, searchKeys);
+  // --------------------------------------------------
+  // Handlers:
+  function inputHandler(event) {
+    clearTimeout(init.timerID);
+    setPrevInputText(inputText);
     setInputText(event.target.value);
-  };
-  // ++++++
-  // +++
-  const searchContainerHandler = () => {
-    setActiveSearchContainer(false);
-    setTrigger(false);
-    setIDsArr([]);
-    setProducts([]);
-    setFetchedProducts([]);
-    setFetchedProducts([]);
-    setLoading(false);
-    setReady(false);
-    setInputText("");
-  };
-  // ++++++
+  }
 
-  const [searchKeys, setSearchKeys] = useState([]);
-  // Get products from server by itemNo:
-  // const getSearchProducts = async (arrOfProductsItemNo = []) => {
-  //   arrOfProductsItemNo.map(async (itemNo) => {
-  //     await fetch(`http://localhost:8000/api/products/${itemNo}`)
-  //       .then((r) => r.json())
-  //       .then((r) =>
-  //         setFetchedProducts((val) =>
-  //           val.find((prod) => prod.itemNo === r.itemNo) ? val : [...val, r]
-  //         )
-  //       )
-  //       .catch((error) => console.log(error.message));
-  //   });
-  //   setLoading(false);
-  //   setReady(true);
-  // };
-
-  const getAllProducts = async () => {
-    axios
-      .get(`http://localhost:8000/api/products`)
-      .then((r) => {
-        setFetchedProducts(r.data);
-      })
-      .catch((error) => console.log(error.message));
-
-    setLoading(false);
-    setReady(true);
-  };
-  // ++++++
-  // -----------------------------------------------------------------------------------
-  // Hooks:
-  // ++++++
-  // Start of searching process:
-  useEffect(() => {
-    if (!trigger && searchObserver(inputText)) {
-      // Clear previous results:
-      setFetchedProducts([]);
+  function closeSearchContainerHandler(event) {
+    if (
+      event.currentTarget.id !== "search-container" ||
+      event.currentTarget.id !== "search-input"
+    ) {
       setIDsArr([]);
-      setActiveSearchContainer(false);
-      return setTrigger(true);
     }
-    return false;
-  }, [inputText]);
-  // ++++++
-  // Loading:
+  }
+
+  function keyPressHandler(event) {
+    if (event.which === 13 && event.target.id === "search-input") {
+      clearTimeout(init.timerID);
+      setSearchStatus(true);
+      setEnterPressed(true);
+    }
+  }
+
+  function clearSearch() {
+    setSearchStatus(false);
+  }
+
+  function launchNextSearch() {
+    setIDsArr([]);
+    setSearchStatus(true);
+  }
+
+  function updateFormattedInputText() {
+    const prevFormattedInputText = formatedInputText;
+    const nextFormattedInputText = formatUserText(inputText);
+    if (prevFormattedInputText.length !== nextFormattedInputText.length) {
+      setFormatedInputText(nextFormattedInputText);
+    }
+  }
+
+  function updateIDsFrom(arrOfIDs) {
+    const prevArrOfIDs = [...arrOfIDs];
+    const nextArrOfIDs = createArrOfProductsIDs(formatedInputText, searchKeys);
+    prevArrOfIDs.sort();
+    nextArrOfIDs.sort();
+    if (prevArrOfIDs.toString() !== nextArrOfIDs.toString()) {
+      setIDsArr(nextArrOfIDs);
+    }
+  }
+
+  function clearInputText() {
+    if (downloadState !== "pending") {
+      setInputText("");
+      searchInput.current.focus();
+    }
+  }
+
+  function setInitSearchState() {
+    setIDsArr([]);
+  }
+  // ---------------------------------------------------------
+  // useEffect:
   useEffect(() => {
-    const regEx = new RegExp(`${inputText.trim()}`, "gi");
-    const filteredProducts = Array.from(
-      new Set(
-        searchKeys
-          .filter((prod) => regEx.test(prod.name))
-          .map((prod) => prod.itemNo)
-      )
+    fetchSearchKeys(init.API, init.searchKeysEndPoint ?? "products").then(
+      setSearchKeys
     );
-    return filteredProducts.length > 0
-      ? setIDsArr([...filteredProducts])
-      : [console.log("no results"), setTrigger(false)];
-  }, [searchKeys]);
-  // ++++++
-  // Fetch products from server:
+  }, []);
+
   useEffect(() => {
-    if (trigger) {
-      setLoading(true);
-      getAllProducts();
+    if (inputText.length < prevInputText.length) {
+      clearSearch();
+      updateFormattedInputText();
+      if (inputText.length < 3) {
+        setInitSearchState();
+      }
+    } else {
+      launchNextSearch();
+      updateFormattedInputText();
     }
-  }, [trigger]);
+  }, [inputText]);
 
   useEffect(() => {
-    const keys = fetchedProducts.map((product) => {
-      const k = {
-        name: product.name,
-        itemNo: product.itemNo,
-      };
-
-      return k;
-    });
-
-    setSearchKeys(keys);
-  }, [fetchedProducts]);
+    if (searchStatus === true) {
+      if (init.typedMoreOrEqualThen(3).in(formatedInputText)) {
+        updateIDsFrom(arrIDs);
+      }
+    }
+  }, [formatedInputText, searchStatus, enterPressed]);
 
   useEffect(() => {
-    const productsToShow = [];
-    fetchedProducts.forEach((product) => {
-      arrIDs.forEach((id) => {
-        if (product.itemNo === id) {
-          productsToShow.push(product);
-        }
-      });
-    });
-
-    setProducts(productsToShow);
+    if (arrIDs.length !== 0) {
+      if (searchStatus === true) {
+        init.timerID = setTimeout(
+          () => {
+            fetchProductsBy()
+              .then((r) => setProducts(r))
+              .then(() => enterPressed && setEnterPressed(false))
+              .then(() => searchInput.current.focus());
+          },
+          enterPressed === true ? 0 : init.searchDelay
+        );
+      }
+    } else {
+      setProducts([]);
+    }
   }, [arrIDs]);
-  // ++++++
-  // Rendering results:
+
   useEffect(() => {
-    if (ready === true) {
+    if (products.length > 0) {
       setActiveSearchContainer(true);
+      setSearchStatus(false);
     }
-    return [setTrigger(false), setReady(false)];
-  }, [ready]);
+  }, [products]);
 
   useEffect(() => {
-    document.addEventListener("click", searchContainerHandler);
-    return () => document.removeEventListener("click", searchContainerHandler);
+    document.addEventListener("keypress", keyPressHandler);
+    return () => document.removeEventListener("keypress", keyPressHandler);
+  }, [enterPressed]);
+
+  useEffect(() => {
+    document.addEventListener("click", closeSearchContainerHandler);
+    return () =>
+      document.removeEventListener("click", closeSearchContainerHandler);
   }, []);
 
-  useEffect(async () => {
-    const keysObjects = await axios.get(`${API}searchKeys`);
-    const keys = keysObjects.data.map((obj) => {
-      const keyObj = {
-        name: obj.name,
-        itemNo: obj.itemNo,
-      };
-      return keyObj;
-    });
-
-    setSearchKeys(keys);
-  }, []);
-  // ---------------------------------------------------------------------------------
   return (
     <>
       <Search
         component="input"
-        sx={{ border: "solid rgba(0, 0, 0, 0.2) 1px", borderRadius: 20 }}
+        sx={{
+          border: "solid rgba(0, 0, 0, 0.2) 1px",
+          borderRadius: 20,
+        }}
       >
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
         <StyledInputBase
+          id={init.searchInputID}
+          disabled={downloadState === "pending"}
+          inputRef={searchInput}
           required
-          value={inputText}
-          placeholder="search"
+          autoFocus
+          value={downloadState === "pending" ? "searching..." : inputText}
+          placeholder={"search"}
           onChange={inputHandler}
+          sx={{ cursor: "pointer" }}
         />
-        {loading ? <Spinner left={"70%"} top={"22%"} /> : false}
-        {
+        {inputText && (
+          <IconButton
+            className="clearInputBtn"
+            onClick={clearInputText}
+            disableRipple
+            sx={{
+              position: "absolute",
+              top: "0px",
+              right: "-29px",
+              color: "#000",
+            }}
+          >
+            <CloseOutlinedIcon />
+          </IconButton>
+        )}
+        {products.length !== 0 && (
           <SearchResultContainer
             active={activeSearchContainer}
             products={products}
-            oneCard={fetchedProducts.length === 1}
+            oneCard={products.length === 1}
           />
-        }
+        )}
       </Search>
     </>
   );

@@ -20,6 +20,8 @@ import {
   ORDER_AMOUNT_UPDATED,
   EMPTY_SHOPPING_CART,
   EMPTY_SHOPPING_CART_ERROR,
+  READY_FOR_EDIT_START,
+  ADDED_PRODUCT_TO_CART,
 } from "../actions/cart.actions";
 import { downloadRequestStates } from "../../app/constants";
 
@@ -97,6 +99,12 @@ const cartReducer = (state = initialState, action) => {
         addProductToCartRequestState: downloadRequestStates.ERROR,
       };
 
+    case READY_FOR_EDIT_START:
+      return {
+        ...state,
+        editCartState: downloadRequestStates.IDLE,
+      };
+
     case EDIT_START:
       return {
         ...state,
@@ -158,23 +166,28 @@ const cartReducer = (state = initialState, action) => {
     case ORDER_AMOUNT_UPDATED:
       return {
         ...state,
-          totalSum: action.payload,
-        };
+        totalSum: action.payload,
+      };
 
     case EMPTY_SHOPPING_CART:
-        return {
+      return {
         ...state,
         cart: [],
         clearShoppingCartState: downloadRequestStates.SUCCESS,
-        };
+      };
 
     case EMPTY_SHOPPING_CART_ERROR:
-        return {
+      return {
         ...state,
         cart: [],
         clearShoppingCartState: downloadRequestStates.ERROR,
-        };
-  
+      };
+
+    case ADDED_PRODUCT_TO_CART:
+      return {
+        ...state,
+        editCartState: downloadRequestStates.IDLE,
+      };
 
     default:
       return state;

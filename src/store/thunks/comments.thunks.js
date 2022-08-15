@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { API } from "../../app/constants";
 import { 
     downloadAllCommentsRequested, 
@@ -25,9 +26,24 @@ const fetchAllComments =
         dispatch(downloadAllCommentsSuccess(comments.data));
         return comments;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(downloadAllCommentsError());
+        Sentry.captureException(err);
       });
+};
+
+const fetchProductComments = (productId) => (dispatch) => {
+  dispatch(downloadProductCommentsRequested());
+  axios
+    .get(`${API}comments/product/${productId}`)
+    .then((comments) => {
+      dispatch(downloadProductCommentsSuccess(comments.data));
+      return comments;
+    })
+    .catch((err) => {
+      dispatch(downloadProductCommentsError());
+      Sentry.captureException(err);
+    });
 };
 
 const addComment = (comment) => (dispatch) => {
@@ -43,21 +59,9 @@ const addComment = (comment) => (dispatch) => {
       dispatch(addCommentSuccess(addedComment));
       return addedComment;
     })
-    .catch(() => {
+    .catch((err) => {
+      Sentry.captureException(err);
       dispatch(addCommentError());
-    });
-};
-
-const fetchProductComments = (productId) => (dispatch) => {
-  dispatch(downloadProductCommentsRequested());
-  axios
-    .get(`${API}comments/product/${productId}`)
-    .then((comments) => {
-      dispatch(downloadProductCommentsSuccess(comments.data));
-      return comments;
-    })
-    .catch(() => {
-      dispatch(downloadProductCommentsError());
     });
 };
 
@@ -74,7 +78,8 @@ const editComment = (id, comment) => (dispatch) => {
       dispatch(editProductCommentsSuccess(addedComment));
       return addedComment;
     })
-    .catch(() => {
+    .catch((err) => {
+      Sentry.captureException(err);
       dispatch(editProductCommentsError());
     });
 };

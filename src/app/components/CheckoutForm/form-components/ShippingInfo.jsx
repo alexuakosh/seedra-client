@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import {
   FormControl,
   FormLabel,
@@ -24,16 +25,14 @@ const ShippingInfo = () => {
   const [shippingData, setShippingData] = useState([]);
   
   let defaultMethod;
-  
 
   useEffect(() => {
+    setFieldValue("deliveryMethod", "expressDelivery")
     axios
       .get(`${API}shipping-methods`)
       .then((shippingMethods) => setShippingData(shippingMethods.data))
-      .catch(() => console.log("Some problem with shipping methods fetching"));
+      .catch((err) => Sentry.captureException(err));
   }, []);
-
-  console.log(field.value );
 
   field.value === undefined
     ? shippingData.forEach((item) => {
@@ -78,8 +77,9 @@ const ShippingInfo = () => {
                         <Box display="flex" flexDirection="row">
                           <FormControlLabel
                             value={item.customId}
-                            control={<Radio />}
+                            control={<Radio name={item.customId}/>}
                             label={item.name}
+                           
                           />
                           <Box
                             key={item._id}

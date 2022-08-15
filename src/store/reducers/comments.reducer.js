@@ -60,6 +60,7 @@ import {
           addCommentRequestState: downloadRequestStates.SUCCESS,
           editedComent: action.payload.data,
           comments: [...state.comments, action.payload.data],
+          productComments: [...state.productComments, action.payload.data]
         };
   
       case ADD_COMMENT_ERROR:
@@ -80,7 +81,7 @@ import {
           ...state,
           downloadProductCommentsRequestState: downloadRequestStates.SUCCESS,
           productComments: action.payload,
-          comments: [...state.comments, ...action.payload],
+          comments: [...state.comments.filter(comment => comment.product._id !== action.payload[0].product._id), ...action.payload],
         };
   
       case DOWNLOAD_PRODUCT_COMMENTS_ERROR:
@@ -100,6 +101,7 @@ import {
           ...state,
           editCommentRequestState: downloadRequestStates.SUCCESS,
           comments: [...state.comments.filter(comment => comment._id !== action.payload.data._id), action.payload.data],
+          productComments: [...state.productComments.filter(comment => comment._id !== action.payload.data._id), action.payload.data]
         };
       case EDIT_PRODUCT_COMMENT_ERROR:
         return {

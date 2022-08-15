@@ -6,6 +6,14 @@
     "settings": {
         "react": {
             "version": "detect"
+        },
+        "import/resolver": {
+            "node": {
+                "moduleDirectory": [
+                    "node_modules",
+                    "src/"
+                ]
+            }
         }
     },
     "extends": [
@@ -26,10 +34,22 @@
         "react"
     ],
     "rules": {
+        "import/no-unresolved": [
+            2,
+            {
+                "caseSensitive": false,
+                "ignore": ["swiper/css", "swiper/react", "@sentry/react"]
+            }
+        ],
         "no-underscore-dangle": "off",
         "default-param-last": "off",
         "import/prefer-default-export": "off",
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": true
+            }
+        ],
         "no-unused-expressions": "off",
         "import/no-named-as-default": "off"
     }

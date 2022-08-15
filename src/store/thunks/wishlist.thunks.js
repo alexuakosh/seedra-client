@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { API } from "../../app/constants";
 import {
   downloadWishlistRequested,
@@ -28,8 +29,9 @@ const fetchWishlist =
           dispatch(downloadWishlistSuccess(wishlist.data));
           return wishlist;
         })
-        .catch(() => {
+        .catch((err) => {
           dispatch(downloadWishlistError());
+          Sentry.captureException(err);
         });
     }
   };
@@ -48,8 +50,9 @@ const addWishlist = (wishlist) => (dispatch) => {
         dispatch(addWishlistSuccess(addedWishlist.data));
         return addedWishlist;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(addWishlistError());
+        Sentry.captureException(err);
       });
   }
 };
@@ -69,8 +72,9 @@ const addProductToWishlist = (productId) => (dispatch) => {
         dispatch(addProductToWishlistSuccess(updatedWishlist.data));
         return updatedWishlist;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(addProductToWishlistError());
+        Sentry.captureException(err);
       });
   }
 };
@@ -90,8 +94,9 @@ const deleteProductFromWishlist = (productId) => (dispatch) => {
         dispatch(addProductToWishlistSuccess(updatedWishlist.data));
         return updatedWishlist;
       })
-      .catch(() => {
+      .catch((err) => {
         dispatch(addProductToWishlistError());
+        Sentry.captureException(err);
       });
   }
 };

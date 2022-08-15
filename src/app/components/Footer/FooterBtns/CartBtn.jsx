@@ -1,4 +1,3 @@
-// import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
@@ -19,10 +18,10 @@ const styles = {
     mr: "0px",
   },
 };
-// ==================================================================
+
 export default function CartBtn ({ productsQuantityInUserCart, linkPath, ...restProps }) {
   
-  // ----------------------------------------------------------------
+  
   return (
     <Box sx={styles.CartBtn} {...restProps}>
       <RouterLink to={linkPath} underline="none">
@@ -36,7 +35,7 @@ export default function CartBtn ({ productsQuantityInUserCart, linkPath, ...rest
   );
 };
 
-// ===================================================================
+
 
 CartBtn.defaultProps = {
   productsQuantityInUserCart: 0,
